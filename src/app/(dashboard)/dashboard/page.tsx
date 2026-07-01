@@ -1,18 +1,9 @@
-import LogoutButton from "@/components/auth/logout-button";
-import { getSession } from "@/lib/auth/session";
-
-export default async function DashboardPage() {
-  const session = await getSession();
-
+export default function DashboardPage() {
   return (
-    <div className="space-y-6 p-8">
-      <div>
-        <h1 className="text-3xl font-bold">Welcome {session?.user.name}</h1>
+    <div>
+      <h1 className="text-3xl font-bold">Dashboard</h1>
 
-        <p>{session?.user.email}</p>
-      </div>
-
-      <LogoutButton />
+      <p className="text-muted-foreground mt-2">Welcome to LoanWise AI.</p>
     </div>
   );
 }
