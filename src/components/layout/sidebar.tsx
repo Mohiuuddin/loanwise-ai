@@ -8,8 +8,8 @@ import NavItem from "./nav-item";
 
 export default function Sidebar() {
   return (
-    <aside className="hidden w-64 border-r bg-background lg:flex lg:flex-col">
-      <div className="border-b p-6">
+    <aside className="hidden w-64 shrink-0 border-r bg-background lg:flex lg:flex-col">
+      <div className="flex h-16 items-center px-6">
         <Link href="/dashboard">
           <h1 className="text-2xl font-bold">LoanWise AI</h1>
         </Link>
