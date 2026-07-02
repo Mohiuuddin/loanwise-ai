@@ -21,10 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { LoanDetailsValues } from "@/schemas/loan-details.schema";
+import { LoanApplicationValues } from "@/schemas/loan-application.schema";
 
 export default function LoanDetailsStep() {
-  const form = useFormContext<LoanDetailsValues>();
+  const form = useFormContext<LoanApplicationValues>();
 
   return (
     <Form {...form}>
