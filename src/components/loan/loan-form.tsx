@@ -1,46 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { LoanFormData } from "@/types/loan";
+import {
+  loanDetailsSchema,
+  LoanDetailsValues,
+} from "@/schemas/loan-details.schema";
 
 import LoanDetailsStep from "./loan-details-step";
 import LoanStepper from "./loan-stepper";
 import StepNavigation from "./step-navigation";
 
-const initialData: LoanFormData = {
-  loanAmount: 0,
-  loanPurpose: "PERSONAL",
-  loanTermMonths: 12,
-
-  employmentType: "FULL_TIME",
-  companyName: "",
-  jobTitle: "",
-  employmentYears: 0,
-  monthlySalary: 0,
-
-  monthlyExpense: 0,
-  otherIncome: 0,
-  existingLoanAmount: 0,
-  bankBalance: 0,
-};
-
 export default function LoanForm() {
-  const [step, setStep] = useState(0);
-
-  const [formData, setFormData] = useState<LoanFormData>(initialData);
+  const form = useForm<LoanDetailsValues>({
+    resolver: zodResolver(loanDetailsSchema),
+    defaultValues: {
+      loanAmount: 50000,
+      loanPurpose: "PERSONAL",
+      loanTermMonths: 12,
+    },
+    mode: "onTouched",
+  });
 
   return (
-    <div className="space-y-8">
-      <LoanStepper currentStep={step} />
+    <FormProvider {...form}>
+      <div className="space-y-8">
+        <LoanStepper />
 
-      <LoanDetailsStep formData={formData} setFormData={setFormData} />
+        <LoanDetailsStep />
 
-      <StepNavigation
-        currentStep={step}
-        onNext={() => setStep((s) => s + 1)}
-        onPrevious={() => setStep((s) => s - 1)}
-      />
-    </div>
+        <StepNavigation />
+      </div>
+    </FormProvider>
   );
 }
