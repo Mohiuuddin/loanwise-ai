@@ -24,6 +24,16 @@ export default function LoanForm() {
       loanAmount: 50000,
       loanPurpose: "PERSONAL",
       loanTermMonths: 12,
+
+      employmentStatus: "FULL_TIME",
+      employerName: "",
+      monthlyIncome: 0,
+      yearsEmployed: 0,
+
+      creditScore: 700,
+      monthlyExpenses: 0,
+      existingLoanEmi: 0,
+      savings: 0,
     },
     mode: "onTouched",
   });

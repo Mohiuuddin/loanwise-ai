@@ -1,19 +1,20 @@
+import { loanSteps } from "@/constants/loan-steps";
 interface LoanStepperProps {
   currentStep: number;
 }
 
-const steps = [
-  "Loan Details",
-  "Employment",
-  "Financial",
-  "Documents",
-  "Review",
-];
+// const steps = [
+//   "Loan Details",
+//   "Employment",
+//   "Financial",
+//   "Documents",
+//   "Review",
+// ];
 
 export default function LoanStepper({ currentStep }: LoanStepperProps) {
   return (
     <div className="flex items-center justify-between rounded-lg border bg-card p-4">
-      {steps.map((step, index) => (
+      {loanSteps.map((step, index) => (
         <div
           key={step}
           className={`text-sm font-medium ${
