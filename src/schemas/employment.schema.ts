@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const employmentSchema = z.object({
-  employmentStatus: z.enum([
+  employmentType: z.enum([
     "FULL_TIME",
     "PART_TIME",
     "SELF_EMPLOYED",

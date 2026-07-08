@@ -11,11 +11,12 @@ interface StepNavigationProps {
   currentStep: number;
   totalSteps: number;
   setCurrentStep: Dispatch<SetStateAction<number>>;
+  onSubmit: () => void;
 }
 
 const stepFields: (keyof LoanApplicationValues)[][] = [
   ["loanAmount", "loanPurpose", "loanTermMonths"],
-  ["employmentStatus", "employerName", "monthlyIncome", "yearsEmployed"],
+  ["employmentType", "employerName", "monthlyIncome", "yearsEmployed"],
   ["creditScore", "monthlyExpenses", "existingLoanEmi", "savings"],
   [],
   [],
@@ -25,6 +26,7 @@ export default function StepNavigation({
   currentStep,
   totalSteps,
   setCurrentStep,
+  onSubmit,
 }: StepNavigationProps) {
   const form = useFormContext<LoanApplicationValues>();
 
@@ -40,9 +42,7 @@ export default function StepNavigation({
       if (!valid) return;
     }
 
-    if (!isLastStep) {
-      setCurrentStep((prev) => prev + 1);
-    }
+    setCurrentStep((prev) => prev + 1);
   };
 
   const handlePrevious = () => {
@@ -51,15 +51,12 @@ export default function StepNavigation({
     }
   };
 
-  const handleSubmit = async () => {
+  const handleFinalSubmit = async () => {
     const valid = await form.trigger();
 
     if (!valid) return;
 
-    console.log("Loan Application Submitted", form.getValues());
-
-    // TODO:
-    // Call Server Action / API to save application
+    onSubmit();
   };
 
   return (
@@ -73,7 +70,10 @@ export default function StepNavigation({
         Previous
       </Button>
 
-      <Button type="button" onClick={isLastStep ? handleSubmit : handleNext}>
+      <Button
+        type="button"
+        onClick={isLastStep ? handleFinalSubmit : handleNext}
+      >
         {isLastStep ? "Submit" : "Next"}
       </Button>
     </div>

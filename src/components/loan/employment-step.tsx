@@ -31,7 +31,7 @@ export default function EmploymentStep() {
       <div className="space-y-6 rounded-lg border bg-card p-6">
         <FormField
           control={form.control}
-          name="employmentStatus"
+          name="employmentType"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Employment Status</FormLabel>

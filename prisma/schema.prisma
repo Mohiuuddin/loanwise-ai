@@ -34,6 +34,8 @@ enum EmploymentType {
   SELF_EMPLOYED
   BUSINESS
   UNEMPLOYED
+  STUDENT
+  RETIRED
 }
 
 enum DocumentType {
