@@ -63,19 +63,27 @@ export default function LoanForm() {
 
     try {
       await createLoanApplication({
-        loanAmount: values.loanAmount,
-        loanPurpose: values.loanPurpose,
-        loanTermMonths: values.loanTermMonths,
+        application: {
+          loanAmount: values.loanAmount,
+          loanPurpose: values.loanPurpose,
+          loanTermMonths: values.loanTermMonths,
 
-        employmentType: values.employmentType,
-        employerName: values.employerName,
-        monthlyIncome: values.monthlyIncome,
-        yearsEmployed: values.yearsEmployed,
+          employmentType: values.employmentType,
+          employerName: values.employerName,
+          monthlyIncome: values.monthlyIncome,
+          yearsEmployed: values.yearsEmployed,
 
-        creditScore: values.creditScore,
-        monthlyExpenses: values.monthlyExpenses,
-        existingLoanEmi: values.existingLoanEmi,
-        savings: values.savings,
+          creditScore: values.creditScore,
+          monthlyExpenses: values.monthlyExpenses,
+          existingLoanEmi: values.existingLoanEmi,
+          savings: values.savings,
+        },
+
+        documents: {
+          nationalId: values.nationalId,
+          salarySlip: values.salarySlip,
+          bankStatement: values.bankStatement,
+        },
       });
 
       form.reset();
