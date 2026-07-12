@@ -12,13 +12,14 @@ interface StepNavigationProps {
   totalSteps: number;
   setCurrentStep: Dispatch<SetStateAction<number>>;
   onSubmit: () => void;
+  isSubmitting: boolean;
 }
 
 const stepFields: (keyof LoanApplicationValues)[][] = [
   ["loanAmount", "loanPurpose", "loanTermMonths"],
   ["employmentType", "employerName", "monthlyIncome", "yearsEmployed"],
   ["creditScore", "monthlyExpenses", "existingLoanEmi", "savings"],
-  [],
+  ["nationalId", "salarySlip", "bankStatement"],
   [],
 ];
 
@@ -27,6 +28,7 @@ export default function StepNavigation({
   totalSteps,
   setCurrentStep,
   onSubmit,
+  isSubmitting,
 }: StepNavigationProps) {
   const form = useFormContext<LoanApplicationValues>();
 
@@ -72,9 +74,10 @@ export default function StepNavigation({
 
       <Button
         type="button"
+        disabled={isSubmitting}
         onClick={isLastStep ? handleFinalSubmit : handleNext}
       >
-        {isLastStep ? "Submit" : "Next"}
+        {isLastStep ? (isSubmitting ? "Submitting..." : "Submit") : "Next"}
       </Button>
     </div>
   );

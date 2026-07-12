@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const documentSchema = z.object({
-  salarySlip: z.any().optional(),
+  nationalId: z.instanceof(File).optional(),
 
-  bankStatement: z.any().optional(),
+  salarySlip: z.instanceof(File).optional(),
 
-  nationalId: z.any().optional(),
+  bankStatement: z.instanceof(File).optional(),
 });
 
 export type DocumentValues = z.infer<typeof documentSchema>;

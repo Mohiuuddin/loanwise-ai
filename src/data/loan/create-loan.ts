@@ -36,6 +36,8 @@ export async function createLoan(
       },
     });
 
-    return application.id;
+    return {
+      applicationId: application.id,
+    };
   });
 }

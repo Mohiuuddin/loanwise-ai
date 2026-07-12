@@ -21,20 +21,60 @@ export default function DocumentStep() {
   return (
     <Form {...form}>
       <div className="space-y-6 rounded-lg border bg-card p-6">
+        <h2 className="text-xl font-semibold">Upload Documents</h2>
+
+        <p className="text-sm text-muted-foreground">
+          Please upload the required documents to continue.
+        </p>
+
         <FormField
           control={form.control}
-          name="salarySlip"
-          render={({ field }) => (
+          name="nationalId"
+          render={({ field: { onChange, value, ...field } }) => (
             <FormItem>
-              <FormLabel>Salary Slip (PDF)</FormLabel>
+              <FormLabel>National ID</FormLabel>
 
               <FormControl>
                 <Input
                   type="file"
-                  accept=".pdf"
-                  onChange={(e) => field.onChange(e.target.files?.[0])}
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  {...field}
+                  onChange={(e) => onChange(e.target.files?.[0] ?? undefined)}
                 />
               </FormControl>
+
+              {value && (
+                <p className="text-sm text-muted-foreground">
+                  Selected: {value.name}
+                </p>
+              )}
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="salarySlip"
+          render={({ field: { onChange, value, ...field } }) => (
+            <FormItem>
+              <FormLabel>Salary Slip</FormLabel>
+
+              <FormControl>
+                <Input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  {...field}
+                  onChange={(e) => onChange(e.target.files?.[0] ?? undefined)}
+                />
+              </FormControl>
+
+              {value && (
+                <p className="text-sm text-muted-foreground">
+                  Selected: {value.name}
+                </p>
+              )}
 
               <FormMessage />
             </FormItem>
@@ -44,37 +84,24 @@ export default function DocumentStep() {
         <FormField
           control={form.control}
           name="bankStatement"
-          render={({ field }) => (
+          render={({ field: { onChange, value, ...field } }) => (
             <FormItem>
-              <FormLabel>Bank Statement (PDF)</FormLabel>
-
-              <FormControl>
-                <Input
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => field.onChange(e.target.files?.[0])}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="nationalId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>National ID (Optional)</FormLabel>
+              <FormLabel>Bank Statement</FormLabel>
 
               <FormControl>
                 <Input
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => field.onChange(e.target.files?.[0])}
+                  {...field}
+                  onChange={(e) => onChange(e.target.files?.[0] ?? undefined)}
                 />
               </FormControl>
+
+              {value && (
+                <p className="text-sm text-muted-foreground">
+                  Selected: {value.name}
+                </p>
+              )}
 
               <FormMessage />
             </FormItem>

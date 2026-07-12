@@ -2,118 +2,131 @@
 
 import { useFormContext } from "react-hook-form";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { LoanApplicationValues } from "@/schemas/loan-application.schema";
 
 export default function ReviewStep() {
-  const { getValues } = useFormContext<LoanApplicationValues>();
+  const form = useFormContext<LoanApplicationValues>();
 
-  const values = getValues();
+  const values = form.getValues();
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Loan Details</CardTitle>
-        </CardHeader>
+    <div className="space-y-8 rounded-lg border bg-card p-6">
+      <h2 className="text-2xl font-semibold">Review Your Application</h2>
 
-        <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span>Loan Amount</span>
-            <span>${values.loanAmount.toLocaleString()}</span>
-          </div>
+      {/* Loan Details */}
+      <section className="space-y-2">
+        <h3 className="text-lg font-semibold">Loan Details</h3>
 
-          <div className="flex justify-between">
-            <span>Purpose</span>
-            <span>{values.loanPurpose}</span>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <p>
+            <span className="font-medium">Loan Amount:</span>{" "}
+            {values.loanAmount.toLocaleString()}
+          </p>
 
-          <div className="flex justify-between">
-            <span>Term</span>
-            <span>{values.loanTermMonths} months</span>
-          </div>
-        </CardContent>
-      </Card>
+          <p>
+            <span className="font-medium">Loan Purpose:</span>{" "}
+            {values.loanPurpose}
+          </p>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Employment</CardTitle>
-        </CardHeader>
+          <p>
+            <span className="font-medium">Loan Term:</span>{" "}
+            {values.loanTermMonths} Months
+          </p>
+        </div>
+      </section>
 
-        <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span>Status</span>
-            <span>{values.employmentType}</span>
-          </div>
+      {/* Employment */}
+      <section className="space-y-2">
+        <h3 className="text-lg font-semibold">Employment</h3>
 
-          <div className="flex justify-between">
-            <span>Employer</span>
-            <span>{values.employerName}</span>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <p>
+            <span className="font-medium">Employment Type:</span>{" "}
+            {values.employmentType}
+          </p>
 
-          <div className="flex justify-between">
-            <span>Income</span>
-            <span>${values.monthlyIncome.toLocaleString()}</span>
-          </div>
+          <p>
+            <span className="font-medium">Employer:</span> {values.employerName}
+          </p>
 
-          <div className="flex justify-between">
-            <span>Years</span>
-            <span>{values.yearsEmployed}</span>
-          </div>
-        </CardContent>
-      </Card>
+          <p>
+            <span className="font-medium">Monthly Income:</span>{" "}
+            {values.monthlyIncome.toLocaleString()}
+          </p>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Financial</CardTitle>
-        </CardHeader>
+          <p>
+            <span className="font-medium">Years Employed:</span>{" "}
+            {values.yearsEmployed}
+          </p>
+        </div>
+      </section>
 
-        <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span>Credit Score</span>
-            <span>{values.creditScore}</span>
-          </div>
+      {/* Financial */}
+      <section className="space-y-2">
+        <h3 className="text-lg font-semibold">Financial Profile</h3>
 
-          <div className="flex justify-between">
-            <span>Monthly Expenses</span>
-            <span>${values.monthlyExpenses.toLocaleString()}</span>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <p>
+            <span className="font-medium">Credit Score:</span>{" "}
+            {values.creditScore}
+          </p>
 
-          <div className="flex justify-between">
-            <span>Existing EMI</span>
-            <span>${values.existingLoanEmi.toLocaleString()}</span>
-          </div>
+          <p>
+            <span className="font-medium">Monthly Expenses:</span>{" "}
+            {values.monthlyExpenses.toLocaleString()}
+          </p>
 
-          <div className="flex justify-between">
-            <span>Savings</span>
-            <span>${values.savings.toLocaleString()}</span>
-          </div>
-        </CardContent>
-      </Card>
+          <p>
+            <span className="font-medium">Existing Loan EMI:</span>{" "}
+            {values.existingLoanEmi.toLocaleString()}
+          </p>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Documents</CardTitle>
-        </CardHeader>
+          <p>
+            <span className="font-medium">Savings:</span>{" "}
+            {values.savings.toLocaleString()}
+          </p>
+        </div>
+      </section>
 
-        <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span>Salary Slip</span>
-            <span>{values.salarySlip?.name ?? "Not uploaded"}</span>
-          </div>
+      {/* Documents */}
+      <section className="space-y-2">
+        <h3 className="text-lg font-semibold">Documents</h3>
 
-          <div className="flex justify-between">
-            <span>Bank Statement</span>
-            <span>{values.bankStatement?.name ?? "Not uploaded"}</span>
-          </div>
+        <div className="grid grid-cols-1 gap-2">
+          <p>
+            <span className="font-medium">National ID:</span>{" "}
+            {values.nationalId
+              ? `${values.nationalId.name} (${(
+                  values.nationalId.size /
+                  1024 /
+                  1024
+                ).toFixed(2)} MB)`
+              : "Not selected"}
+          </p>
 
-          <div className="flex justify-between">
-            <span>National ID</span>
-            <span>{values.nationalId?.name ?? "Not uploaded"}</span>
-          </div>
-        </CardContent>
-      </Card>
+          <p>
+            <span className="font-medium">Salary Slip:</span>{" "}
+            {values.salarySlip
+              ? `${values.salarySlip.name} (${(
+                  values.salarySlip.size /
+                  1024 /
+                  1024
+                ).toFixed(2)} MB)`
+              : "Not selected"}
+          </p>
+
+          <p>
+            <span className="font-medium">Bank Statement:</span>{" "}
+            {values.bankStatement
+              ? `${values.bankStatement.name} (${(
+                  values.bankStatement.size /
+                  1024 /
+                  1024
+                ).toFixed(2)} MB)`
+              : "Not selected"}
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
