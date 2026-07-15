@@ -1,31 +1,42 @@
 import { CheckCircle2, Clock3, FileText, ShieldCheck } from "lucide-react";
 
+import { getCurrentSession } from "@/lib/auth/auth";
+import { getDashboardStats } from "@/data/dashboard/get-dashboard-stats";
+
 import StatsCard from "./stats-card";
 
-const dashboardStats = [
-  {
-    title: "Applications",
-    value: 12,
-    icon: FileText,
-  },
-  {
-    title: "Approved",
-    value: 7,
-    icon: CheckCircle2,
-  },
-  {
-    title: "Pending",
-    value: 5,
-    icon: Clock3,
-  },
-  {
-    title: "AI Average Score",
-    value: "84%",
-    icon: ShieldCheck,
-  },
-];
+export default async function DashboardOverview() {
+  const session = await getCurrentSession();
 
-export default function DashboardOverview() {
+  if (!session?.user) {
+    return null;
+  }
+
+  const stats = await getDashboardStats(session.user.id);
+
+  const dashboardStats = [
+    {
+      title: "Applications",
+      value: stats.total,
+      icon: FileText,
+    },
+    {
+      title: "Approved",
+      value: stats.approved,
+      icon: CheckCircle2,
+    },
+    {
+      title: "Pending",
+      value: stats.pending,
+      icon: Clock3,
+    },
+    {
+      title: "Rejected",
+      value: stats.rejected,
+      icon: ShieldCheck,
+    },
+  ];
+
   return (
     <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
       {dashboardStats.map((stat) => (

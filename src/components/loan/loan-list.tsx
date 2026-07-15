@@ -2,20 +2,11 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { getUserLoans } from "@/data/loan/get-user-loans";
+import StatusBadge from "./status-badge";
 
 interface LoanListProps {
   loans: Awaited<ReturnType<typeof getUserLoans>>;
 }
-
-// interface LoanListProps {
-//   loans: {
-//     id: string;
-//     loanAmount: unknown;
-//     loanPurpose: string;
-//     status: string;
-//     createdAt: Date;
-//   }[];
-// }
 
 export default function LoanList({ loans }: LoanListProps) {
   if (loans.length === 0) {
@@ -41,7 +32,7 @@ export default function LoanList({ loans }: LoanListProps) {
               </p>
 
               <p>
-                <strong>Status:</strong> {loan.status}
+                <strong>Status:</strong> {<StatusBadge status={loan.status} />}
               </p>
 
               <p>

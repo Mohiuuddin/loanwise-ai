@@ -1,5 +1,8 @@
 import { getLoanById } from "@/data/loan/get-loan-by-id";
+
 import GenerateAIButton from "./generate-ai-button";
+import LoanDecisionButtons from "./loan-decision-buttons";
+import StatusBadge from "./status-badge";
 
 interface LoanDetailsProps {
   loan: NonNullable<Awaited<ReturnType<typeof getLoanById>>>;
@@ -26,7 +29,7 @@ export default function LoanDetails({ loan }: LoanDetailsProps) {
           </p>
 
           <p>
-            <strong>Status:</strong> {loan.status}
+            <strong>Status:</strong> {<StatusBadge status={loan.status} />}
           </p>
         </div>
       </section>
@@ -90,6 +93,7 @@ export default function LoanDetails({ loan }: LoanDetailsProps) {
         )}
       </section>
 
+      {/* AI Prediction */}
       <section className="space-y-4 rounded-lg border p-6">
         <h2 className="text-xl font-semibold">AI Prediction</h2>
 
@@ -121,6 +125,26 @@ export default function LoanDetails({ loan }: LoanDetailsProps) {
           </div>
         )}
       </section>
+
+      {/* Loan Decision */}
+      {loan.aiPrediction && !loan.loanDecision && (
+        <LoanDecisionButtons applicationId={loan.id} />
+      )}
+
+      {loan.loanDecision && (
+        <section className="space-y-4 rounded-lg border p-6">
+          <h2 className="text-xl font-semibold">Loan Decision</h2>
+
+          <p>
+            <strong>Decision:</strong>{" "}
+            {loan.loanDecision.approved ? "Approved" : "Rejected"}
+          </p>
+
+          <p>
+            <strong>Remarks:</strong> {loan.loanDecision.remarks || "-"}
+          </p>
+        </section>
+      )}
     </div>
   );
 }
