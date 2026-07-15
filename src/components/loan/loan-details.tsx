@@ -1,4 +1,5 @@
 import { getLoanById } from "@/data/loan/get-loan-by-id";
+import GenerateAIButton from "./generate-ai-button";
 
 interface LoanDetailsProps {
   loan: NonNullable<Awaited<ReturnType<typeof getLoanById>>>;
@@ -86,6 +87,38 @@ export default function LoanDetails({ loan }: LoanDetailsProps) {
           </div>
         ) : (
           <p>No financial profile.</p>
+        )}
+      </section>
+
+      <section className="space-y-4 rounded-lg border p-6">
+        <h2 className="text-xl font-semibold">AI Prediction</h2>
+
+        {!loan.aiPrediction ? (
+          <GenerateAIButton applicationId={loan.id} />
+        ) : (
+          <div className="space-y-2">
+            <p>
+              <strong>Eligible:</strong>{" "}
+              {loan.aiPrediction.eligible ? "Yes" : "No"}
+            </p>
+
+            <p>
+              <strong>Risk Score:</strong> {loan.aiPrediction.riskScore}
+            </p>
+
+            <p>
+              <strong>Confidence:</strong> {loan.aiPrediction.confidenceScore}%
+            </p>
+
+            <p>
+              <strong>Recommended Amount:</strong>{" "}
+              {loan.aiPrediction.recommendedAmount.toString()}
+            </p>
+
+            <p>
+              <strong>Reasoning:</strong> {loan.aiPrediction.reasoning}
+            </p>
+          </div>
         )}
       </section>
     </div>
