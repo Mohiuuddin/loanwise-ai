@@ -3,6 +3,7 @@ import { EmploymentType } from "@/generated/prisma/enums";
 
 interface LoanAnalysisInput {
   loanAmount: number;
+  loanTermMonths: number;
   monthlyIncome: number;
   monthlyExpenses: number;
   existingLoanEmi: number;
@@ -30,6 +31,8 @@ Return ONLY valid JSON.
 Loan Details
 
 Requested Amount: ${input.loanAmount}
+
+Loan Term: ${input.loanTermMonths} months
 
 Employment Type: ${input.employmentType}
 

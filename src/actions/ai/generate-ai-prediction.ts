@@ -6,9 +6,9 @@ import { getLoanForAI } from "@/data/loan/get-loan-for-ai";
 import { createAIPrediction } from "@/data/ai/create-ai-prediction";
 
 import { calculateLoanRisk } from "@/services/ai/calculate-loan-risk";
+import { generateLoanAnalysis } from "@/services/ai/generate-loan-analysis";
 
 export async function generateAIPrediction(applicationId: string) {
-  console.log("generateAIPrediction called");
   const session = await getCurrentSession();
 
   if (!session?.user) {
@@ -25,16 +25,33 @@ export async function generateAIPrediction(applicationId: string) {
     throw new Error("Loan application is incomplete.");
   }
 
-  const prediction = calculateLoanRisk({
-    loanAmount: Number(loan.loanAmount),
-    monthlyIncome: Number(loan.employment.monthlySalary),
-    monthlyExpenses: Number(loan.financialProfile.monthlyExpense),
-    existingLoanEmi: Number(loan.financialProfile.existingLoanAmount),
-    savings: Number(loan.financialProfile.bankBalance ?? 0),
-    creditScore: loan.financialProfile.creditScore ?? 0,
-    loanTermMonths: loan.loanTermMonths,
-    employmentType: loan.employment.employmentType,
-  });
+  let prediction;
+
+  try {
+    prediction = await generateLoanAnalysis({
+      loanAmount: Number(loan.loanAmount),
+      loanTermMonths: loan.loanTermMonths,
+      monthlyIncome: Number(loan.employment.monthlySalary),
+      monthlyExpenses: Number(loan.financialProfile.monthlyExpense),
+      existingLoanEmi: Number(loan.financialProfile.existingLoanAmount),
+      savings: Number(loan.financialProfile.bankBalance ?? 0),
+      creditScore: loan.financialProfile.creditScore ?? 0,
+      employmentType: loan.employment.employmentType,
+    });
+  } catch (error) {
+    console.error("Groq AI failed. Falling back to rule engine.", error);
+
+    prediction = calculateLoanRisk({
+      loanAmount: Number(loan.loanAmount),
+      loanTermMonths: loan.loanTermMonths,
+      monthlyIncome: Number(loan.employment.monthlySalary),
+      monthlyExpenses: Number(loan.financialProfile.monthlyExpense),
+      existingLoanEmi: Number(loan.financialProfile.existingLoanAmount),
+      savings: Number(loan.financialProfile.bankBalance ?? 0),
+      creditScore: loan.financialProfile.creditScore ?? 0,
+      employmentType: loan.employment.employmentType,
+    });
+  }
 
   await createAIPrediction({
     applicationId,
