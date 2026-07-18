@@ -4,11 +4,17 @@ import GenerateAIButton from "./generate-ai-button";
 import LoanDecisionButtons from "./loan-decision-buttons";
 import StatusBadge from "./status-badge";
 
+import AdminReviewPanel from "@/components/admin/admin-review-panel";
+
 interface LoanDetailsProps {
   loan: NonNullable<Awaited<ReturnType<typeof getLoanById>>>;
+  isAdmin?: boolean;
 }
 
-export default function LoanDetails({ loan }: LoanDetailsProps) {
+export default function LoanDetails({
+  loan,
+  isAdmin = false,
+}: LoanDetailsProps) {
   return (
     <div className="space-y-8">
       {/* Loan */}
@@ -29,7 +35,7 @@ export default function LoanDetails({ loan }: LoanDetailsProps) {
           </p>
 
           <p>
-            <strong>Status:</strong> {<StatusBadge status={loan.status} />}
+            <strong>Status:</strong> <StatusBadge status={loan.status} />
           </p>
         </div>
       </section>
@@ -95,42 +101,80 @@ export default function LoanDetails({ loan }: LoanDetailsProps) {
 
       {/* AI Prediction */}
       <section className="space-y-4 rounded-lg border p-6">
-        <h2 className="text-xl font-semibold">AI Prediction</h2>
+        <h2 className="text-xl font-semibold">AI Underwriting Report</h2>
 
         {!loan.aiPrediction ? (
-          <GenerateAIButton applicationId={loan.id} />
+          !isAdmin && <GenerateAIButton applicationId={loan.id} />
         ) : (
-          <div className="space-y-2">
-            <p>
-              <strong>Eligible:</strong>{" "}
-              {loan.aiPrediction.eligible ? "Yes" : "No"}
-            </p>
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <p>
+                <strong>Eligible:</strong>{" "}
+                {loan.aiPrediction.eligible ? "Yes" : "No"}
+              </p>
 
-            <p>
-              <strong>Risk Score:</strong> {loan.aiPrediction.riskScore}
-            </p>
+              <p>
+                <strong>Risk Score:</strong> {loan.aiPrediction.riskScore}
+              </p>
 
-            <p>
-              <strong>Confidence:</strong> {loan.aiPrediction.confidenceScore}%
-            </p>
+              <p>
+                <strong>Confidence:</strong> {loan.aiPrediction.confidenceScore}
+                %
+              </p>
 
-            <p>
-              <strong>Recommended Amount:</strong>{" "}
-              {loan.aiPrediction.recommendedAmount.toString()}
-            </p>
+              <p>
+                <strong>Recommended Amount:</strong>{" "}
+                {loan.aiPrediction.recommendedAmount.toString()}
+              </p>
 
-            <p>
-              <strong>Reasoning:</strong> {loan.aiPrediction.reasoning}
-            </p>
-          </div>
+              <p>
+                <strong>Credit Assessment:</strong>{" "}
+                {loan.aiPrediction.creditAssessment}
+              </p>
+
+              <p>
+                <strong>Affordability:</strong>{" "}
+                {loan.aiPrediction.affordability}
+              </p>
+
+              <p>
+                <strong>Employment Risk:</strong>{" "}
+                {loan.aiPrediction.employmentRisk}
+              </p>
+
+              <p>
+                <strong>Savings Strength:</strong>{" "}
+                {loan.aiPrediction.savingsStrength}
+              </p>
+
+              <p>
+                <strong>Debt Ratio:</strong> {loan.aiPrediction.debtRatio}
+              </p>
+            </div>
+
+            <div className="border-t pt-4">
+              <h3 className="mb-2 font-semibold">AI Reasoning</h3>
+
+              <p className="leading-7 text-muted-foreground">
+                {loan.aiPrediction.reasoning}
+              </p>
+            </div>
+          </>
         )}
       </section>
 
-      {/* Loan Decision */}
-      {loan.aiPrediction && !loan.loanDecision && (
-        <LoanDecisionButtons applicationId={loan.id} />
+      {/* User Actions */}
+      {!isAdmin && (
+        <>
+          {loan.aiPrediction && !loan.loanDecision && (
+            <LoanDecisionButtons applicationId={loan.id} />
+          )}
+        </>
       )}
 
+      {isAdmin && <AdminReviewPanel applicationId={loan.id} />}
+
+      {/* Loan Decision */}
       {loan.loanDecision && (
         <section className="space-y-4 rounded-lg border p-6">
           <h2 className="text-xl font-semibold">Loan Decision</h2>

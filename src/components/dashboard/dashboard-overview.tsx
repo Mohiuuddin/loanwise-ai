@@ -1,19 +1,21 @@
 import { CheckCircle2, Clock3, FileText, ShieldCheck } from "lucide-react";
 
-import { getCurrentSession } from "@/lib/auth/auth";
-import { getDashboardStats } from "@/data/dashboard/get-dashboard-stats";
-
 import StatsCard from "./stats-card";
 
-export default async function DashboardOverview() {
-  const session = await getCurrentSession();
+interface DashboardOverviewProps {
+  stats: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    averageRisk: string;
+    averageConfidence: string;
+    totalRequested: number;
+    totalRecommended: number;
+  };
+}
 
-  if (!session?.user) {
-    return null;
-  }
-
-  const stats = await getDashboardStats(session.user.id);
-
+export default function DashboardOverview({ stats }: DashboardOverviewProps) {
   const dashboardStats = [
     {
       title: "Applications",
@@ -31,8 +33,8 @@ export default async function DashboardOverview() {
       icon: Clock3,
     },
     {
-      title: "Rejected",
-      value: stats.rejected,
+      title: "AI Avg Risk",
+      value: `${stats.averageRisk}%`,
       icon: ShieldCheck,
     },
   ];

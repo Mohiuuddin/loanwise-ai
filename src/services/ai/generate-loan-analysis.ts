@@ -15,61 +15,103 @@ interface LoanAnalysisInput {
 
 export async function generateLoanAnalysis(input: LoanAnalysisInput) {
   const prompt = `
-You are a senior bank loan underwriter working for a digital bank.
+You are a senior loan underwriter working for a commercial bank.
 
-Your task is to evaluate a loan application using standard banking principles.
+Your job is to evaluate loan applications using professional banking standards.
 
-Evaluation Criteria:
+Evaluate the applicant based on:
+
 1. Credit Score
 2. Debt-to-Income Ratio
-3. Monthly Income Stability
+3. Monthly Income
 4. Existing Loan Obligations
 5. Savings Buffer
 6. Employment Stability
 7. Requested Loan Amount
 8. Loan Term
 
-Scoring:
-- Risk Score: 0-100
-  0 = Very Low Risk
-  100 = Extremely High Risk
+Guidelines:
+
+Credit Assessment:
+- Excellent
+- Good
+- Fair
+- Poor
+
+Affordability:
+- Excellent
+- Good
+- Moderate
+- Poor
+
+Employment Risk:
+- Low
+- Medium
+- High
+
+Savings Strength:
+- Strong
+- Moderate
+- Weak
+
+Debt Ratio:
+Return a percentage such as "24%"
+
+Risk Score:
+Return an integer from 0-100.
+0 = Lowest Risk
+100 = Highest Risk
 
 Confidence Score:
-0-100
+Return an integer from 0-100.
 
 Recommended Amount:
-Return the maximum amount you believe is safe.
+Return the maximum safe loan amount.
 
 Reasoning:
-Provide 4-8 sentences explaining WHY you made the decision.
+Write 4-8 concise sentences explaining the decision.
 
 Return ONLY valid JSON.
 
 {
   "eligible": true,
-  "riskScore": 20,
-  "confidenceScore": 90,
+  "riskScore": 18,
+  "confidenceScore": 94,
   "recommendedAmount": 50000,
-  "reasoning": ""
+  "reasoning": "Detailed explanation.",
+
+  "creditAssessment": "Excellent",
+  "affordability": "Good",
+  "employmentRisk": "Low",
+  "savingsStrength": "Strong",
+  "debtRatio": "22%"
 }
 
-Loan Information
+Applicant Information
 
-Requested Amount: ${input.loanAmount}
+Loan Amount:
+${input.loanAmount}
 
-Loan Term: ${input.loanTermMonths} months
+Loan Term:
+${input.loanTermMonths} months
 
-Employment Type: ${input.employmentType}
+Employment Type:
+${input.employmentType}
 
-Monthly Income: ${input.monthlyIncome}
+Monthly Income:
+${input.monthlyIncome}
 
-Monthly Expenses: ${input.monthlyExpenses}
+Monthly Expenses:
+${input.monthlyExpenses}
 
-Existing EMI: ${input.existingLoanEmi}
+Existing EMI:
+${input.existingLoanEmi}
 
-Savings: ${input.savings}
+Savings:
+${input.savings}
 
-Credit Score: ${input.creditScore}
+Credit Score:
+${input.creditScore}
 `;
 
   const response = await groq.chat.completions.create({

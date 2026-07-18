@@ -7,6 +7,12 @@ interface CreateAIPredictionInput {
   confidenceScore: number;
   recommendedAmount: number;
   reasoning: string;
+
+  creditAssessment: string;
+  affordability: string;
+  employmentRisk: string;
+  savingsStrength: string;
+  debtRatio: string;
 }
 
 export async function createAIPrediction(data: CreateAIPredictionInput) {

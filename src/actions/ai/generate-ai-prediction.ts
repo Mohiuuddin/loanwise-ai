@@ -60,6 +60,12 @@ export async function generateAIPrediction(applicationId: string) {
     confidenceScore: prediction.confidenceScore,
     recommendedAmount: prediction.recommendedAmount,
     reasoning: prediction.reasoning,
+
+    creditAssessment: prediction.creditAssessment,
+    affordability: prediction.affordability,
+    employmentRisk: prediction.employmentRisk,
+    savingsStrength: prediction.savingsStrength,
+    debtRatio: prediction.debtRatio,
   });
 
   return prediction;

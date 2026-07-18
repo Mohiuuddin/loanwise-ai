@@ -6,6 +6,8 @@ import { calculateDebtRisk } from "./debt-ratio";
 import { calculateEmploymentRisk } from "./employment-risk";
 import { calculateSavingsRisk } from "./savings-risk";
 
+import { AIPrediction } from "@/schemas/ai-prediction.schema";
+
 interface LoanRiskInput {
   loanAmount: number;
   monthlyIncome: number;
@@ -17,7 +19,7 @@ interface LoanRiskInput {
   employmentType: EmploymentType;
 }
 
-export function calculateLoanRisk(input: LoanRiskInput) {
+export function calculateLoanRisk(input: LoanRiskInput): AIPrediction {
   const credit = calculateCreditRisk(input.creditScore);
 
   const employment = calculateEmploymentRisk(input.employmentType);
@@ -78,11 +80,46 @@ export function calculateLoanRisk(input: LoanRiskInput) {
     affordability.reason,
   ].join(" ");
 
+  const debtRatio = (
+    ((input.monthlyExpenses + input.existingLoanEmi) / input.monthlyIncome) *
+    100
+  ).toFixed(0);
+
   return {
     eligible,
     riskScore,
     confidenceScore,
     recommendedAmount: Math.round(recommendedAmount),
     reasoning,
+
+    creditAssessment:
+      input.creditScore >= 750
+        ? "Excellent"
+        : input.creditScore >= 650
+          ? "Good"
+          : input.creditScore >= 550
+            ? "Fair"
+            : "Poor",
+
+    affordability:
+      affordability.score <= 5
+        ? "Excellent"
+        : affordability.score <= 10
+          ? "Good"
+          : affordability.score <= 15
+            ? "Moderate"
+            : "Poor",
+
+    employmentRisk:
+      employment.score <= 5
+        ? "Low"
+        : employment.score <= 10
+          ? "Medium"
+          : "High",
+
+    savingsStrength:
+      savings.score <= 5 ? "Strong" : savings.score <= 10 ? "Moderate" : "Weak",
+
+    debtRatio: `${debtRatio}%`,
   };
 }

@@ -9,13 +9,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { getRecentApplications } from "@/services/dashboard/dashboard.service";
+import { getRecentApplications } from "@/data/dashboard/get-recent-applications";
 
-import ApplicationStatusBadge from "./application-status-badge";
+import StatusBadge from "@/components/loan/status-badge";
 
-export default async function RecentApplications() {
-  const applications = await getRecentApplications();
+interface RecentApplicationsProps {
+  applications: Awaited<ReturnType<typeof getRecentApplications>>;
+}
 
+export default function RecentApplications({
+  applications,
+}: RecentApplicationsProps) {
   return (
     <Card>
       <CardHeader>
@@ -26,26 +30,48 @@ export default async function RecentApplications() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Applicant</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Purpose</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
+              <TableHead className="text-center">Loan Amount</TableHead>
+              <TableHead className="text-center">Purpose</TableHead>
+              <TableHead className="text-center">Status</TableHead>
+              <TableHead className="text-center">Risk</TableHead>
+              <TableHead className="text-center">Date</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {applications.map((application) => (
-              <TableRow key={application.id}>
-                <TableCell>{application.applicant}</TableCell>
-                <TableCell>{application.amount}</TableCell>
-                <TableCell>{application.purpose}</TableCell>
-                <TableCell>
-                  <ApplicationStatusBadge status={application.status} />
+            {applications.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center">
+                  No applications found.
                 </TableCell>
-                <TableCell>{application.date}</TableCell>
               </TableRow>
-            ))}
+            ) : (
+              applications.map((application) => (
+                <TableRow key={application.id}>
+                  <TableCell className="text-center">
+                    {application.loanAmount.toString()}
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {application.loanPurpose}
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    <StatusBadge status={application.status} />
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {application.aiPrediction
+                      ? application.aiPrediction.riskScore
+                      : "-"}
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {application.createdAt.toLocaleDateString()}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>
