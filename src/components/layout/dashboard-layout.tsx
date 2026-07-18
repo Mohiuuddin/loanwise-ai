@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 import Header from "./header";
-import Sidebar from "./sidebar";
+import AppSidebar from "./app-sidebar";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar />
+      <AppSidebar />
 
       <div className="flex flex-1 flex-col">
         <Header />

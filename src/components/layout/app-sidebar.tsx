@@ -6,7 +6,7 @@ import { dashboardNavigation } from "@/constants/navigation";
 
 import NavItem from "./nav-item";
 
-export default function Sidebar() {
+export default function AppSidebar() {
   return (
     <aside className="hidden w-64 shrink-0 border-r bg-background lg:flex lg:flex-col">
       <div className="flex h-16 items-center px-6">

@@ -23,6 +23,9 @@ enum LoanPurpose {
   AUTO
   BUSINESS
   EDUCATION
+  AGRICULTURE
+  SME
+  SOD
 }
 
 enum ApplicationStatus {
@@ -45,10 +48,21 @@ enum EmploymentType {
 
 enum DocumentType {
   NID
-  PASSPORT
+  
   BANK_STATEMENT
   SALARY_SLIP
-  UTILITY_BILL
+  
+}
+
+enum CollateralType {
+  LAND
+  FLAT
+  BUILDING
+  VEHICLE
+  FDR_DPS_SAVINGS
+  BUSINESS_INVENTORY
+  GOVERNMENT_BOND
+  OTHER
 }
 
 enum AuditAction {
@@ -89,15 +103,17 @@ model LoanApplication {
   user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   loanAmount       Decimal            @db.Decimal(12, 2)
   loanPurpose      LoanPurpose
-  loanTermMonths   Int
+
   status           ApplicationStatus  @default(PENDING)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   employment       Employment?
   financialProfile FinancialProfile?
   documents        UploadedDocument[]
+  collateral       Collateral[]
   aiPrediction     AIPrediction?
   loanDecision     LoanDecision?
+
 
   @@index([userId])
 }
@@ -142,24 +158,82 @@ model UploadedDocument {
   @@index([applicationId])
 }
 
+
+model Collateral {
+
+  id String @id @default(cuid())
+
+  applicationId String
+
+  application LoanApplication @relation(fields:[applicationId], references:[id], onDelete:Cascade)
+
+  type CollateralType
+
+  customType String?
+
+  estimatedValue Decimal @db.Decimal(12,2)
+
+  description String?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+
+// model AIPrediction {
+//   id                String          @id @default(cuid())
+//   applicationId     String          @unique
+//   application       LoanApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+//   eligible          Boolean
+//   riskScore         Int
+//   confidenceScore   Int
+//   recommendedAmount Decimal         @db.Decimal(12, 2)
+//   reasoning         String
+  
+//   creditAssessment  String?
+//   affordability       String?
+//   employmentRisk      String?
+//   savingsStrength     String?
+//   debtRatio           String?
+  
+//   createdAt         DateTime        @default(now())
+// }
+
 model AIPrediction {
   id                String          @id @default(cuid())
+
   applicationId     String          @unique
   application       LoanApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
   eligible          Boolean
   riskScore         Int
   confidenceScore   Int
+
   recommendedAmount Decimal         @db.Decimal(12, 2)
+
+  recommendedRepaymentTermMonths Int
+
+  estimatedMonthlyEMI Decimal @db.Decimal(12, 2)
+
+  maximumAffordableEMI Decimal @db.Decimal(12, 2)
+
+  disposableIncome Decimal @db.Decimal(12, 2)
+
   reasoning         String
-  
+
+  overallRecommendation String?
+
   creditAssessment  String?
-  affordability       String?
-  employmentRisk      String?
-  savingsStrength     String?
-  debtRatio           String?
-  
-  createdAt         DateTime        @default(now())
+  affordability     String?
+  employmentRisk    String?
+  savingsStrength   String?
+  debtRatio         String?
+
+  createdAt DateTime @default(now())
 }
+
+
 
 model LoanDecision {
   id             String          @id @default(cuid())
@@ -171,7 +245,7 @@ model LoanDecision {
   remarks        String?
   reviewedAt     DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-}
+} 
 
 model AuditLog {
   id String @id @default(cuid())

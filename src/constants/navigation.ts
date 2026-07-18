@@ -14,22 +14,22 @@ export const dashboardNavigation = [
   },
   {
     title: "New Application",
-    href: "/applications/new",
+    href: "/dashboard/loan/new",
     icon: FileText,
   },
   {
     title: "Loan History",
-    href: "/applications",
+    href: "/dashboard/loan",
     icon: History,
   },
   {
     title: "Profile",
-    href: "/profile",
+    href: "/dashboard/profile",
     icon: User,
   },
   {
     title: "Settings",
-    href: "/settings",
+    href: "/dashboard/settings",
     icon: Settings,
   },
 ] as const;

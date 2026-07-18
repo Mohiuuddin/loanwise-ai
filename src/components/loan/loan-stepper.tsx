@@ -1,5 +1,7 @@
 "use client";
 
+import { Check } from "lucide-react";
+
 interface LoanStepperProps {
   currentStep: number;
 }
@@ -23,22 +25,37 @@ export default function LoanStepper({ currentStep }: LoanStepperProps) {
           return (
             <div key={step} className="flex flex-1 items-center">
               <div className="flex flex-col items-center">
+                {/* <div
+                  className={[
+                    "flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors",
+                    completed
+                      ? "border-[#22993b] bg-transparent text-[#22993b]"
+                      : current
+                        ? "border-primary bg-transparent text-black"
+                        : "border-muted-foreground text-muted-foreground",
+                  ].join(" ")}
+                >
+                  {completed ? <Check className="h-5 w-5" /> : index + 1}
+                </div> */}
                 <div
                   className={[
                     "flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors",
-                    completed && "border-green-600 bg-green-600 text-white",
-                    current &&
-                      "border-primary bg-primary text-primary-foreground",
-                    !completed &&
-                      !current &&
-                      "border-muted-foreground text-muted-foreground",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
+                    completed
+                      ? "border-[#22993b] bg-transparent"
+                      : current
+                        ? "border-primary bg-transparent"
+                        : "border-muted-foreground",
+                  ].join(" ")}
+                  style={{
+                    color: completed
+                      ? "#22993b"
+                      : current
+                        ? "#000000"
+                        : "var(--muted-foreground)",
+                  }}
                 >
-                  {completed ? "✓" : index + 1}
+                  {completed ? <Check className="h-5 w-5" /> : index + 1}
                 </div>
-
                 <span
                   className={[
                     "mt-2 text-center text-xs font-medium",

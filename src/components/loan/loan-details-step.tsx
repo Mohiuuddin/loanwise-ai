@@ -41,8 +41,14 @@ export default function LoanDetailsStep() {
                 <Input
                   type="number"
                   placeholder="Enter loan amount"
-                  value={field.value}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value === ""
+                        ? undefined
+                        : e.target.valueAsNumber,
+                    )
+                  }
                 />
               </FormControl>
 
@@ -92,8 +98,14 @@ export default function LoanDetailsStep() {
                 <Input
                   type="number"
                   placeholder="Enter loan term"
-                  value={field.value}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value === ""
+                        ? undefined
+                        : e.target.valueAsNumber,
+                    )
+                  }
                 />
               </FormControl>
 

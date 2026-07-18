@@ -85,8 +85,14 @@ export default function EmploymentStep() {
                 <Input
                   type="number"
                   placeholder="Enter monthly income"
-                  value={field.value}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value === ""
+                        ? undefined
+                        : e.target.valueAsNumber,
+                    )
+                  }
                 />
               </FormControl>
 
@@ -106,8 +112,14 @@ export default function EmploymentStep() {
                 <Input
                   type="number"
                   placeholder="Years at current job"
-                  value={field.value}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value === ""
+                        ? undefined
+                        : e.target.valueAsNumber,
+                    )
+                  }
                 />
               </FormControl>
 
