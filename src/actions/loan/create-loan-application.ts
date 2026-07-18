@@ -9,12 +9,16 @@ import { CreateLoanApplicationPayload } from "@/types/create-loan-application-pa
 
 import { uploadDocument } from "@/lib/supabase/storage";
 import { createDocument } from "@/data/document/create-document";
-import { DocumentType } from "@/generated/prisma/enums";
+
+import { AuditAction, DocumentType } from "@/generated/prisma/enums";
+
+import { createAuditLog } from "@/lib/audit-log";
 
 export async function createLoanApplication(
   payload: CreateLoanApplicationPayload,
 ) {
   const validatedData = createLoanApplicationSchema.parse(payload.application);
+
   const session = await getCurrentSession();
 
   if (!session?.user) {
@@ -52,6 +56,13 @@ export async function createLoanApplication(
       mimeType: document.file.type,
     });
   }
+
+  await createAuditLog({
+    userId: session.user.id,
+    action: AuditAction.CREATE_APPLICATION,
+    entity: "LoanApplication",
+    entityId: loan.applicationId,
+  });
 
   return loan;
 }

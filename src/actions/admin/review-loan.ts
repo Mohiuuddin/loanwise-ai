@@ -3,7 +3,11 @@
 import { revalidatePath } from "next/cache";
 
 import prisma from "@/lib/prisma";
-import { ApplicationStatus } from "@/generated/prisma/enums";
+
+import { getCurrentSession } from "@/lib/auth/auth";
+import { createAuditLog } from "@/lib/audit-log";
+
+import { ApplicationStatus, AuditAction } from "@/generated/prisma/enums";
 
 interface ReviewLoanProps {
   applicationId: string;
@@ -16,6 +20,12 @@ export async function reviewLoan({
   status,
   remarks,
 }: ReviewLoanProps) {
+  const session = await getCurrentSession();
+
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
   const approved = status === ApplicationStatus.APPROVED;
 
   await prisma.$transaction(async (tx) => {
@@ -42,6 +52,15 @@ export async function reviewLoan({
         status,
       },
     });
+  });
+
+  await createAuditLog({
+    userId: session.user.id,
+    action: approved
+      ? AuditAction.APPROVE_APPLICATION
+      : AuditAction.REJECT_APPLICATION,
+    entity: "LoanApplication",
+    entityId: applicationId,
   });
 
   revalidatePath("/admin");

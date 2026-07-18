@@ -8,6 +8,10 @@ import { createAIPrediction } from "@/data/ai/create-ai-prediction";
 import { calculateLoanRisk } from "@/services/ai/calculate-loan-risk";
 import { generateLoanAnalysis } from "@/services/ai/generate-loan-analysis";
 
+import { createAuditLog } from "@/lib/audit-log";
+
+import { AuditAction } from "@/generated/prisma/enums";
+
 export async function generateAIPrediction(applicationId: string) {
   const session = await getCurrentSession();
 
@@ -66,6 +70,13 @@ export async function generateAIPrediction(applicationId: string) {
     employmentRisk: prediction.employmentRisk,
     savingsStrength: prediction.savingsStrength,
     debtRatio: prediction.debtRatio,
+  });
+
+  await createAuditLog({
+    userId: session.user.id,
+    action: AuditAction.GENERATE_AI_RESULT,
+    entity: "LoanApplication",
+    entityId: applicationId,
   });
 
   return prediction;
