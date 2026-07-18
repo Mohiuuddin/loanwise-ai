@@ -5,6 +5,7 @@ import LoanDecisionButtons from "./loan-decision-buttons";
 import StatusBadge from "./status-badge";
 
 import AdminReviewPanel from "@/components/admin/admin-review-panel";
+import StatusSelect from "@/components/admin/status-select";
 
 interface LoanDetailsProps {
   loan: NonNullable<Awaited<ReturnType<typeof getLoanById>>>;
@@ -34,9 +35,15 @@ export default function LoanDetails({
             <strong>Term:</strong> {loan.loanTermMonths} Months
           </p>
 
-          <p>
-            <strong>Status:</strong> <StatusBadge status={loan.status} />
-          </p>
+          <div className="flex items-center gap-2">
+            <strong>Status:</strong>
+
+            {isAdmin ? (
+              <StatusSelect applicationId={loan.id} status={loan.status} />
+            ) : (
+              <StatusBadge status={loan.status} />
+            )}
+          </div>
         </div>
       </section>
 
