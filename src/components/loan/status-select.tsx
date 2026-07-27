@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { updateApplicationStatus } from "@/actions/admin/update-application-status";
+import { updateLoanStatus } from "@/actions/loan/update-status";
 
 import { ApplicationStatus } from "@/generated/prisma/enums";
 
@@ -30,7 +30,7 @@ export default function StatusSelect({
       defaultValue={status}
       onValueChange={(value) =>
         startTransition(async () => {
-          await updateApplicationStatus({
+          await updateLoanStatus({
             applicationId,
             status: value as ApplicationStatus,
           });

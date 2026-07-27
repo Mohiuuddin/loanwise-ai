@@ -8,6 +8,7 @@ export async function getLoanForAI(applicationId: string) {
     include: {
       employment: true,
       financialProfile: true,
+      collateral: true,
     },
   });
 }

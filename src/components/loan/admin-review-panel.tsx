@@ -13,24 +13,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { reviewLoan } from "@/actions/admin/review-loan";
+import { reviewLoan } from "@/actions/loan/review-loan";
 
 import { ApplicationStatus } from "@/generated/prisma/enums";
 
 interface AdminReviewPanelProps {
   applicationId: string;
+  currentStatus: ApplicationStatus;
 }
 
 export default function AdminReviewPanel({
   applicationId,
+  currentStatus,
 }: AdminReviewPanelProps) {
   const [remarks, setRemarks] = useState("");
 
-  const [status, setStatus] = useState<ApplicationStatus>(
-    ApplicationStatus.UNDER_REVIEW,
-  );
+  const [status, setStatus] = useState<ApplicationStatus>(currentStatus);
 
   const [isPending, startTransition] = useTransition();
+
+  async function handleSubmit() {
+    await reviewLoan({
+      applicationId,
+      status,
+      remarks,
+    });
+  }
 
   return (
     <section className="space-y-6 rounded-lg border p-6">
@@ -43,7 +51,7 @@ export default function AdminReviewPanel({
       </div>
 
       <div className="space-y-2">
-        <label className="font-medium">Decision</label>
+        <label className="font-medium">Application Status</label>
 
         <Select
           value={status}
@@ -69,10 +77,10 @@ export default function AdminReviewPanel({
         <label className="font-medium">Officer Remarks</label>
 
         <Textarea
-          placeholder="Write remarks..."
+          rows={5}
+          placeholder="Enter remarks for this application..."
           value={remarks}
           onChange={(e) => setRemarks(e.target.value)}
-          rows={5}
         />
       </div>
 
@@ -81,11 +89,7 @@ export default function AdminReviewPanel({
         disabled={isPending}
         onClick={() =>
           startTransition(async () => {
-            await reviewLoan({
-              applicationId,
-              status,
-              remarks,
-            });
+            await handleSubmit();
           })
         }
       >

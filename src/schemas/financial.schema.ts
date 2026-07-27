@@ -1,16 +1,13 @@
 import { z } from "zod";
 
 export const financialSchema = z.object({
-  creditScore: z
-    .number()
-    .min(300, "Minimum credit score is 300")
-    .max(900, "Maximum credit score is 900"),
+  creditScore: z.number(),
 
-  monthlyExpenses: z.number().min(0, "Monthly expenses cannot be negative"),
+  monthlyExpenses: z.number(),
 
-  existingLoanEmi: z.number().min(0, "Existing EMI cannot be negative"),
+  existingLoanEmi: z.number().min(0),
 
-  savings: z.number().min(0, "Savings cannot be negative"),
+  bankBalance: z.number(),
 });
 
 export type FinancialValues = z.infer<typeof financialSchema>;

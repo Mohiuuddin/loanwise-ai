@@ -1,5 +1,6 @@
 export const loanSteps = [
   "Loan Details",
+  "Collateral",
   "Employment",
   "Financial",
   "Documents",

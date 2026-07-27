@@ -1,99 +1,165 @@
 import { groq } from "@/lib/groq";
-import { EmploymentType } from "@/generated/prisma/enums";
+
+import { EmploymentType, LoanPurpose } from "@/generated/prisma/enums";
+
 import { aiPredictionSchema } from "@/schemas/ai-prediction.schema";
 
 interface LoanAnalysisInput {
   loanAmount: number;
-  loanTermMonths: number;
+  interestRate: number;
+  loanPurpose: LoanPurpose;
+
   monthlyIncome: number;
   monthlyExpenses: number;
   existingLoanEmi: number;
+
   savings: number;
+
   creditScore: number;
+
   employmentType: EmploymentType;
+
+  collateralValue: number;
 }
 
 export async function generateLoanAnalysis(input: LoanAnalysisInput) {
   const prompt = `
-You are a senior loan underwriter working for a commercial bank.
+You are a senior commercial bank loan underwriter.
 
-Your job is to evaluate loan applications using professional banking standards.
+Your responsibility is to evaluate a loan application exactly like a real bank credit officer.
 
-Evaluate the applicant based on:
+The applicant has ALREADY selected:
+
+• Loan Amount
+• Interest Rate
+
+DO NOT change the interest rate.
+
+Instead determine:
+
+• Whether the loan should be approved
+• Maximum safe loan amount
+• Best repayment term
+• Estimated monthly EMI
+• Maximum affordable EMI
+• Disposable income
+• Overall recommendation
+
+Evaluate ALL of these factors together.
 
 1. Credit Score
-2. Debt-to-Income Ratio
-3. Monthly Income
+2. Monthly Income
+3. Monthly Expenses
 4. Existing Loan Obligations
-5. Savings Buffer
-6. Employment Stability
-7. Requested Loan Amount
-8. Loan Term
+5. Debt-to-Income Ratio
+6. Savings
+7. Employment Type
+8. Loan Purpose
+9. Requested Loan Amount
+10. Interest Rate
+11. Collateral Value
 
-Guidelines:
+Employment Guidelines
 
-Credit Assessment:
-- Excellent
-- Good
-- Fair
-- Poor
+FULL_TIME
+Very Stable
 
-Affordability:
-- Excellent
-- Good
-- Moderate
-- Poor
+PART_TIME
+Moderately Stable
 
-Employment Risk:
-- Low
-- Medium
-- High
+BUSINESS
+Moderately Stable
 
-Savings Strength:
-- Strong
-- Moderate
-- Weak
+SELF_EMPLOYED
+Moderate Risk
 
-Debt Ratio:
-Return a percentage such as "24%"
+STUDENT
+High Risk unless income exists
 
-Risk Score:
-Return an integer from 0-100.
-0 = Lowest Risk
-100 = Highest Risk
+UNEMPLOYED
+Very High Risk
 
-Confidence Score:
-Return an integer from 0-100.
+RETIRED
+Depends on savings and pension
 
-Recommended Amount:
-Return the maximum safe loan amount.
+Loan Purpose Guidelines
 
-Reasoning:
-Write 4-8 concise sentences explaining the decision.
+PERSONAL
+Usually unsecured
+
+HOME
+Lower risk when collateral exists
+
+AUTO
+Vehicle can be collateral
+
+BUSINESS
+Evaluate repayment capacity carefully
+
+SME
+Business cash flow is important
+
+EDUCATION
+Student profile and future earning potential matter
+
+AGRICULTURE
+Consider seasonal income
+
+SOD
+Normally secured by deposits or collateral
+
+Collateral Guidelines
+
+Large collateral lowers lending risk.
+
+Little or no collateral increases lending risk.
+
+The recommended amount should never exceed the applicant's repayment capacity.
+
+A student requesting a very large loan without income should normally be rejected.
 
 Return ONLY valid JSON.
 
 {
   "eligible": true,
-  "riskScore": 18,
-  "confidenceScore": 94,
-  "recommendedAmount": 50000,
-  "reasoning": "Detailed explanation.",
+  "riskScore": 22,
+  "confidenceScore": 93,
 
-  "creditAssessment": "Excellent",
+  "recommendedAmount": 50000,
+
+  "recommendedRepaymentTermMonths": 48,
+
+  "estimatedMonthlyEMI": 1180,
+
+  "maximumAffordableEMI": 1450,
+
+  "disposableIncome": 2300,
+
+  "overallRecommendation": "Approve",
+
+  "reasoning": "Explain your reasoning in 4 to 8 professional sentences.",
+
+  "creditAssessment": "Good",
+
   "affordability": "Good",
+
   "employmentRisk": "Low",
+
   "savingsStrength": "Strong",
-  "debtRatio": "22%"
+
+  "debtRatio": "28%"
 }
 
 Applicant Information
 
-Loan Amount:
+Requested Loan Amount:
 ${input.loanAmount}
 
-Loan Term:
-${input.loanTermMonths} months
+Interest Rate:
+${input.interestRate} %
+
+Loan Purpose:
+${input.loanPurpose}
 
 Employment Type:
 ${input.employmentType}
@@ -104,11 +170,14 @@ ${input.monthlyIncome}
 Monthly Expenses:
 ${input.monthlyExpenses}
 
-Existing EMI:
+Existing Loan EMI:
 ${input.existingLoanEmi}
 
 Savings:
 ${input.savings}
+
+Collateral Value:
+${input.collateralValue}
 
 Credit Score:
 ${input.creditScore}
@@ -123,7 +192,8 @@ ${input.creditScore}
     messages: [
       {
         role: "system",
-        content: "You are an expert loan underwriting AI. Return only JSON.",
+        content:
+          "You are an experienced commercial bank loan underwriter. Return ONLY valid JSON matching the requested schema.",
       },
       {
         role: "user",
@@ -133,7 +203,6 @@ ${input.creditScore}
   });
 
   const content = response.choices[0].message.content!;
-  const prediction = aiPredictionSchema.parse(JSON.parse(content));
 
-  return prediction;
+  return aiPredictionSchema.parse(JSON.parse(content));
 }

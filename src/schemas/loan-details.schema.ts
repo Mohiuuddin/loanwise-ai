@@ -1,14 +1,22 @@
 import { z } from "zod";
 
 export const loanDetailsSchema = z.object({
+  applicantName: z.string().trim().min(2, "Applicant name is required"),
+
   loanAmount: z.number().min(1000, "Minimum loan amount is 1,000"),
 
-  loanPurpose: z.enum(["PERSONAL", "HOME", "AUTO", "BUSINESS", "EDUCATION"]),
+  interestRate: z.number().min(0.1).max(50),
 
-  loanTermMonths: z
-    .number()
-    .min(6, "Minimum loan term is 6 months")
-    .max(360, "Maximum loan term is 360 months"),
+  loanPurpose: z.enum([
+    "PERSONAL",
+    "HOME",
+    "AUTO",
+    "BUSINESS",
+    "EDUCATION",
+    "AGRICULTURE",
+    "SME",
+    "SOD",
+  ]),
 });
 
 export type LoanDetailsValues = z.infer<typeof loanDetailsSchema>;

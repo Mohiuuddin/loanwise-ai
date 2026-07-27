@@ -5,16 +5,19 @@ export const employmentSchema = z.object({
     "FULL_TIME",
     "PART_TIME",
     "SELF_EMPLOYED",
+    "BUSINESS",
     "UNEMPLOYED",
     "STUDENT",
     "RETIRED",
   ]),
 
-  employerName: z.string().min(2, "Employer name is required"),
+  companyName: z.string(),
 
-  monthlyIncome: z.number().min(0, "Monthly income must be at least 0"),
+  jobTitle: z.string(),
 
-  yearsEmployed: z.number().min(0).max(50),
+  monthlySalary: z.number(),
+
+  employmentYears: z.number(),
 });
 
 export type EmploymentValues = z.infer<typeof employmentSchema>;

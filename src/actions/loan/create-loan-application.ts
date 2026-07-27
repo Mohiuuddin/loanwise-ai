@@ -1,23 +1,23 @@
 "use server";
 
-import { createLoanApplicationSchema } from "@/schemas/create-loan-application.schema";
+import { loanApplicationSchema } from "@/schemas/loan-application.schema";
 
 import { createLoan } from "@/data/loan/create-loan";
-
-import { getCurrentSession } from "@/lib/auth/auth";
-import { CreateLoanApplicationPayload } from "@/types/create-loan-application-payload";
-
-import { uploadDocument } from "@/lib/supabase/storage";
 import { createDocument } from "@/data/document/create-document";
 
-import { AuditAction, DocumentType } from "@/generated/prisma/enums";
+import { getCurrentSession } from "@/lib/auth/auth";
+import { uploadDocument } from "@/lib/supabase/storage";
 
 import { createAuditLog } from "@/lib/audit-log";
+
+import { CreateLoanApplicationPayload } from "@/types/create-loan-application-payload";
+
+import { AuditAction, DocumentType } from "@/generated/prisma/enums";
 
 export async function createLoanApplication(
   payload: CreateLoanApplicationPayload,
 ) {
-  const validatedData = createLoanApplicationSchema.parse(payload.application);
+  const validatedData = loanApplicationSchema.parse(payload.application);
 
   const session = await getCurrentSession();
 
@@ -29,22 +29,20 @@ export async function createLoanApplication(
 
   const documents = [
     {
-      file: payload.documents.nationalId,
+      file: validatedData.nationalId,
       type: DocumentType.NID,
     },
     {
-      file: payload.documents.salarySlip,
+      file: validatedData.salarySlip,
       type: DocumentType.SALARY_SLIP,
     },
     {
-      file: payload.documents.bankStatement,
+      file: validatedData.bankStatement,
       type: DocumentType.BANK_STATEMENT,
     },
   ];
 
   for (const document of documents) {
-    if (!document.file) continue;
-
     const uploaded = await uploadDocument(loan.applicationId, document.file);
 
     await createDocument({

@@ -2,6 +2,8 @@
 
 import { useFormContext } from "react-hook-form";
 
+import { LoanApplicationValues } from "@/schemas/loan-application.schema";
+
 import {
   Form,
   FormControl,
@@ -13,41 +15,33 @@ import {
 
 import { Input } from "@/components/ui/input";
 
-import { LoanApplicationValues } from "@/schemas/loan-application.schema";
-
 export default function DocumentStep() {
   const form = useFormContext<LoanApplicationValues>();
 
   return (
     <Form {...form}>
       <div className="space-y-6 rounded-lg border bg-card p-6">
-        <h2 className="text-xl font-semibold">Upload Documents</h2>
+        <h2 className="text-xl font-semibold">Required Documents</h2>
 
         <p className="text-sm text-muted-foreground">
-          Please upload the required documents to continue.
+          Upload the required documents for loan verification.
         </p>
 
         <FormField
           control={form.control}
           name="nationalId"
-          render={({ field: { onChange, value, ...field } }) => (
+          render={({ field: { onChange, ref } }) => (
             <FormItem>
               <FormLabel>National ID</FormLabel>
 
               <FormControl>
                 <Input
+                  ref={ref}
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
-                  {...field}
                   onChange={(e) => onChange(e.target.files?.[0] ?? undefined)}
                 />
               </FormControl>
-
-              {value && (
-                <p className="text-sm text-muted-foreground">
-                  Selected: {value.name}
-                </p>
-              )}
 
               <FormMessage />
             </FormItem>
@@ -57,51 +51,38 @@ export default function DocumentStep() {
         <FormField
           control={form.control}
           name="salarySlip"
-          render={({ field: { onChange, value, ...field } }) => (
+          render={({ field: { onChange, ref } }) => (
             <FormItem>
               <FormLabel>Salary Slip</FormLabel>
 
               <FormControl>
                 <Input
+                  ref={ref}
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
-                  {...field}
                   onChange={(e) => onChange(e.target.files?.[0] ?? undefined)}
                 />
               </FormControl>
-
-              {value && (
-                <p className="text-sm text-muted-foreground">
-                  Selected: {value.name}
-                </p>
-              )}
 
               <FormMessage />
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="bankStatement"
-          render={({ field: { onChange, value, ...field } }) => (
+          render={({ field: { onChange, ref } }) => (
             <FormItem>
               <FormLabel>Bank Statement</FormLabel>
 
               <FormControl>
                 <Input
+                  ref={ref}
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
-                  {...field}
                   onChange={(e) => onChange(e.target.files?.[0] ?? undefined)}
                 />
               </FormControl>
-
-              {value && (
-                <p className="text-sm text-muted-foreground">
-                  Selected: {value.name}
-                </p>
-              )}
 
               <FormMessage />
             </FormItem>

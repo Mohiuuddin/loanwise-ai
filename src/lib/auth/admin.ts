@@ -5,6 +5,7 @@ import { getCurrentSession } from "./auth";
 
 export async function requireAdmin() {
   const session = await getCurrentSession();
+  console.log("SESSION:", session);
 
   if (!session?.user) {
     redirect("/login");

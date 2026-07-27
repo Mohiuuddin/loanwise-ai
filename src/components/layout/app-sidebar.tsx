@@ -2,11 +2,20 @@
 
 import Link from "next/link";
 
-import { dashboardNavigation } from "@/constants/navigation";
+import { commonNavigation, adminNavigation } from "@/constants/navigation";
 
 import NavItem from "./nav-item";
 
-export default function AppSidebar() {
+interface AppSidebarProps {
+  role: "USER" | "ADMIN";
+}
+
+export default function AppSidebar({ role }: AppSidebarProps) {
+  const navigation =
+    role === "ADMIN"
+      ? [...commonNavigation, ...adminNavigation]
+      : commonNavigation;
+
   return (
     <aside className="hidden w-64 shrink-0 border-r bg-background lg:flex lg:flex-col">
       <div className="flex h-16 items-center px-6">
@@ -16,7 +25,7 @@ export default function AppSidebar() {
       </div>
 
       <nav className="flex-1 space-y-2 p-4">
-        {dashboardNavigation.map((item) => (
+        {navigation.map((item) => (
           <NavItem
             key={item.href}
             href={item.href}

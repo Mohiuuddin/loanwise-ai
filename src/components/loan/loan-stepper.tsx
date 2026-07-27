@@ -8,6 +8,7 @@ interface LoanStepperProps {
 
 const steps = [
   "Loan Details",
+  "Collateral",
   "Employment",
   "Financial",
   "Documents",
@@ -25,42 +26,31 @@ export default function LoanStepper({ currentStep }: LoanStepperProps) {
           return (
             <div key={step} className="flex flex-1 items-center">
               <div className="flex flex-col items-center">
-                {/* <div
-                  className={[
-                    "flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors",
-                    completed
-                      ? "border-[#22993b] bg-transparent text-[#22993b]"
-                      : current
-                        ? "border-primary bg-transparent text-black"
-                        : "border-muted-foreground text-muted-foreground",
-                  ].join(" ")}
-                >
-                  {completed ? <Check className="h-5 w-5" /> : index + 1}
-                </div> */}
                 <div
                   className={[
                     "flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors",
                     completed
-                      ? "border-[#22993b] bg-transparent"
+                      ? "border-[#22993b]"
                       : current
-                        ? "border-primary bg-transparent"
+                        ? "border-primary"
                         : "border-muted-foreground",
                   ].join(" ")}
                   style={{
                     color: completed
                       ? "#22993b"
                       : current
-                        ? "#000000"
+                        ? "#000"
                         : "var(--muted-foreground)",
                   }}
                 >
                   {completed ? <Check className="h-5 w-5" /> : index + 1}
                 </div>
+
                 <span
                   className={[
                     "mt-2 text-center text-xs font-medium",
-                    current && "text-primary",
                     completed && "text-green-600",
+                    current && "text-primary",
                     !completed && !current && "text-muted-foreground",
                   ]
                     .filter(Boolean)
@@ -75,9 +65,7 @@ export default function LoanStepper({ currentStep }: LoanStepperProps) {
                   className={[
                     "mx-4 h-1 flex-1 rounded",
                     completed ? "bg-green-600" : "bg-muted",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
+                  ].join(" ")}
                 />
               )}
             </div>

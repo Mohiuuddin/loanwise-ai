@@ -1,4 +1,4 @@
-import { EmploymentType } from "@/generated/prisma/enums";
+import { EmploymentType, LoanPurpose } from "@/generated/prisma/enums";
 
 import { calculateAffordabilityRisk } from "./loan-affordability";
 import { calculateCreditRisk } from "./credit-score";
@@ -10,12 +10,18 @@ import { AIPrediction } from "@/schemas/ai-prediction.schema";
 
 interface LoanRiskInput {
   loanAmount: number;
+  interestRate: number;
+  loanPurpose: LoanPurpose;
+
   monthlyIncome: number;
   monthlyExpenses: number;
   existingLoanEmi: number;
+
   savings: number;
+  collateralValue: number;
+
   creditScore: number;
-  loanTermMonths: number;
+
   employmentType: EmploymentType;
 }
 
@@ -34,16 +40,27 @@ export function calculateLoanRisk(input: LoanRiskInput): AIPrediction {
 
   const affordability = calculateAffordabilityRisk(
     input.loanAmount,
-    input.loanTermMonths,
+    60,
     input.monthlyIncome,
   );
+
+  let collateralScore = 0;
+
+  if (input.collateralValue >= input.loanAmount) {
+    collateralScore = -5;
+  } else if (input.collateralValue >= input.loanAmount * 0.5) {
+    collateralScore = 0;
+  } else {
+    collateralScore = 5;
+  }
 
   const riskScore =
     credit.score +
     employment.score +
     debt.score +
     savings.score +
-    affordability.score;
+    affordability.score +
+    collateralScore;
 
   const eligible = riskScore < 50;
 
@@ -56,21 +73,27 @@ export function calculateLoanRisk(input: LoanRiskInput): AIPrediction {
 
   let recommendedAmount = input.loanAmount;
 
-  if (riskScore >= 20) {
-    recommendedAmount *= 0.9;
-  }
+  if (riskScore >= 20) recommendedAmount *= 0.9;
 
-  if (riskScore >= 40) {
-    recommendedAmount *= 0.8;
-  }
+  if (riskScore >= 40) recommendedAmount *= 0.8;
 
-  if (riskScore >= 60) {
-    recommendedAmount *= 0.6;
-  }
+  if (riskScore >= 60) recommendedAmount *= 0.6;
 
-  if (riskScore >= 80) {
-    recommendedAmount *= 0.5;
-  }
+  if (riskScore >= 80) recommendedAmount *= 0.5;
+
+  const disposableIncome =
+    input.monthlyIncome - input.monthlyExpenses - input.existingLoanEmi;
+
+  const estimatedMonthlyEMI = recommendedAmount / 60;
+
+  const maximumAffordableEMI = disposableIncome * 0.4;
+
+  let recommendedRepaymentTermMonths = 60;
+
+  if (riskScore <= 20) recommendedRepaymentTermMonths = 36;
+  else if (riskScore <= 40) recommendedRepaymentTermMonths = 48;
+  else if (riskScore <= 60) recommendedRepaymentTermMonths = 60;
+  else recommendedRepaymentTermMonths = 72;
 
   const reasoning = [
     credit.reason,
@@ -87,9 +110,23 @@ export function calculateLoanRisk(input: LoanRiskInput): AIPrediction {
 
   return {
     eligible,
+
     riskScore,
+
     confidenceScore,
+
     recommendedAmount: Math.round(recommendedAmount),
+
+    recommendedRepaymentTermMonths,
+
+    estimatedMonthlyEMI: Math.round(estimatedMonthlyEMI),
+
+    maximumAffordableEMI: Math.round(maximumAffordableEMI),
+
+    disposableIncome: Math.round(disposableIncome),
+
+    overallRecommendation: eligible ? "Approve" : "Reject",
+
     reasoning,
 
     creditAssessment:

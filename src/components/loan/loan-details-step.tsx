@@ -2,6 +2,10 @@
 
 import { useFormContext } from "react-hook-form";
 
+import { LoanApplicationValues } from "@/schemas/loan-application.schema";
+
+import { loanPurposeOptions } from "@/constants/loan-purpose";
+
 import {
   Form,
   FormControl,
@@ -21,15 +25,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { LoanApplicationValues } from "@/schemas/loan-application.schema";
-
 export default function LoanDetailsStep() {
   const form = useFormContext<LoanApplicationValues>();
 
   return (
     <Form {...form}>
       <div className="space-y-6 rounded-lg border bg-card p-6">
-        {/* Loan Amount */}
+        <div>
+          <h2 className="text-xl font-semibold">Loan Details</h2>
+
+          <p className="text-sm text-muted-foreground">
+            Enter the basic information about your loan application.
+          </p>
+        </div>
+
+        <FormField
+          control={form.control}
+          name="applicantName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Applicant Name</FormLabel>
+
+              <FormControl>
+                <Input
+                  placeholder="Enter applicant name"
+                  autoComplete="name"
+                  {...field}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="loanAmount"
@@ -40,6 +69,7 @@ export default function LoanDetailsStep() {
               <FormControl>
                 <Input
                   type="number"
+                  min={1000}
                   placeholder="Enter loan amount"
                   value={field.value ?? ""}
                   onChange={(e) =>
@@ -57,7 +87,6 @@ export default function LoanDetailsStep() {
           )}
         />
 
-        {/* Loan Purpose */}
         <FormField
           control={form.control}
           name="loanPurpose"
@@ -65,7 +94,7 @@ export default function LoanDetailsStep() {
             <FormItem>
               <FormLabel>Loan Purpose</FormLabel>
 
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select loan purpose" />
@@ -73,11 +102,11 @@ export default function LoanDetailsStep() {
                 </FormControl>
 
                 <SelectContent>
-                  <SelectItem value="PERSONAL">Personal</SelectItem>
-                  <SelectItem value="HOME">Home</SelectItem>
-                  <SelectItem value="AUTO">Auto</SelectItem>
-                  <SelectItem value="BUSINESS">Business</SelectItem>
-                  <SelectItem value="EDUCATION">Education</SelectItem>
+                  {loanPurposeOptions.map((purpose) => (
+                    <SelectItem key={purpose.value} value={purpose.value}>
+                      {purpose.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -86,18 +115,19 @@ export default function LoanDetailsStep() {
           )}
         />
 
-        {/* Loan Term */}
         <FormField
           control={form.control}
-          name="loanTermMonths"
+          name="interestRate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Loan Term (Months)</FormLabel>
+              <FormLabel>Interest Rate (%)</FormLabel>
 
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Enter loan term"
+                  min={0}
+                  step={0.01}
+                  placeholder="Enter annual interest rate"
                   value={field.value ?? ""}
                   onChange={(e) =>
                     field.onChange(

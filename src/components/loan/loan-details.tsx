@@ -1,11 +1,16 @@
 import { getLoanById } from "@/data/loan/get-loan-by-id";
 
-import GenerateAIButton from "./generate-ai-button";
-import LoanDecisionButtons from "./loan-decision-buttons";
-import StatusBadge from "./status-badge";
+import { formatCurrency, formatEnum } from "@/utils/format";
 
-import AdminReviewPanel from "@/components/admin/admin-review-panel";
-import StatusSelect from "@/components/admin/status-select";
+import StatusBadge from "./status-badge";
+import GenerateAIButton from "./generate-ai-button";
+
+import AiReport from "./ai-report";
+import EmploymentCard from "./employment-card";
+import FinancialProfileCard from "./financial-profile-card";
+import DocumentsCard from "./documents-card";
+import CollateralCard from "./collateral-card";
+import AdminReviewPanel from "./admin-review-panel";
 
 interface LoanDetailsProps {
   loan: NonNullable<Awaited<ReturnType<typeof getLoanById>>>;
@@ -18,182 +23,78 @@ export default function LoanDetails({
 }: LoanDetailsProps) {
   return (
     <div className="space-y-8">
-      {/* Loan */}
+      {/* Loan Information */}
       <section className="rounded-lg border p-6">
         <h2 className="mb-4 text-xl font-semibold">Loan Information</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <p>
-            <strong>Amount:</strong> {loan.loanAmount.toString()}
+            <strong>Applicant:</strong> {loan.applicantName}
           </p>
 
           <p>
-            <strong>Purpose:</strong> {loan.loanPurpose}
+            <strong>Loan Amount:</strong> {formatCurrency(loan.loanAmount)}
           </p>
 
           <p>
-            <strong>Term:</strong> {loan.loanTermMonths} Months
+            <strong>Purpose:</strong> {formatEnum(loan.loanPurpose)}
           </p>
 
-          <div className="flex items-center gap-2">
+          <p>
+            <strong>Interest Rate:</strong>{" "}
+            {Number(loan.interestRate).toFixed(2)}%
+          </p>
+
+          <div className="col-span-2 flex items-center gap-2">
             <strong>Status:</strong>
-
-            {isAdmin ? (
-              <StatusSelect applicationId={loan.id} status={loan.status} />
-            ) : (
-              <StatusBadge status={loan.status} />
-            )}
+            <StatusBadge status={loan.status} />
           </div>
         </div>
       </section>
 
       {/* Employment */}
-      <section className="rounded-lg border p-6">
-        <h2 className="mb-4 text-xl font-semibold">Employment</h2>
-
-        {loan.employment ? (
-          <div className="grid grid-cols-2 gap-4">
-            <p>
-              <strong>Employment Type:</strong> {loan.employment.employmentType}
-            </p>
-
-            <p>
-              <strong>Employer:</strong> {loan.employment.companyName ?? "-"}
-            </p>
-
-            <p>
-              <strong>Monthly Salary:</strong>{" "}
-              {loan.employment.monthlySalary.toString()}
-            </p>
-
-            <p>
-              <strong>Years:</strong> {loan.employment.employmentYears}
-            </p>
-          </div>
-        ) : (
-          <p>No employment information.</p>
-        )}
-      </section>
+      <EmploymentCard employment={loan.employment} />
 
       {/* Financial */}
-      <section className="rounded-lg border p-6">
-        <h2 className="mb-4 text-xl font-semibold">Financial Profile</h2>
+      <FinancialProfileCard financialProfile={loan.financialProfile} />
 
-        {loan.financialProfile ? (
-          <div className="grid grid-cols-2 gap-4">
-            <p>
-              <strong>Credit Score:</strong>{" "}
-              {loan.financialProfile.creditScore ?? "-"}
-            </p>
+      {/* Documents */}
+      <DocumentsCard documents={loan.documents} />
 
-            <p>
-              <strong>Monthly Expenses:</strong>{" "}
-              {loan.financialProfile.monthlyExpense.toString()}
-            </p>
+      {/* Collateral */}
+      <CollateralCard collateral={loan.collateral} />
 
-            <p>
-              <strong>Existing Loan:</strong>{" "}
-              {loan.financialProfile.existingLoanAmount.toString()}
-            </p>
-
-            <p>
-              <strong>Savings:</strong>{" "}
-              {loan.financialProfile.bankBalance?.toString() ?? "-"}
-            </p>
-          </div>
-        ) : (
-          <p>No financial profile.</p>
-        )}
-      </section>
-
-      {/* AI Prediction */}
+      {/* AI Report */}
       <section className="space-y-4 rounded-lg border p-6">
         <h2 className="text-xl font-semibold">AI Underwriting Report</h2>
 
-        {!loan.aiPrediction ? (
-          !isAdmin && <GenerateAIButton applicationId={loan.id} />
+        {loan.aiPrediction ? (
+          <AiReport aiPrediction={loan.aiPrediction} />
         ) : (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              <p>
-                <strong>Eligible:</strong>{" "}
-                {loan.aiPrediction.eligible ? "Yes" : "No"}
-              </p>
-
-              <p>
-                <strong>Risk Score:</strong> {loan.aiPrediction.riskScore}
-              </p>
-
-              <p>
-                <strong>Confidence:</strong> {loan.aiPrediction.confidenceScore}
-                %
-              </p>
-
-              <p>
-                <strong>Recommended Amount:</strong>{" "}
-                {loan.aiPrediction.recommendedAmount.toString()}
-              </p>
-
-              <p>
-                <strong>Credit Assessment:</strong>{" "}
-                {loan.aiPrediction.creditAssessment}
-              </p>
-
-              <p>
-                <strong>Affordability:</strong>{" "}
-                {loan.aiPrediction.affordability}
-              </p>
-
-              <p>
-                <strong>Employment Risk:</strong>{" "}
-                {loan.aiPrediction.employmentRisk}
-              </p>
-
-              <p>
-                <strong>Savings Strength:</strong>{" "}
-                {loan.aiPrediction.savingsStrength}
-              </p>
-
-              <p>
-                <strong>Debt Ratio:</strong> {loan.aiPrediction.debtRatio}
-              </p>
-            </div>
-
-            <div className="border-t pt-4">
-              <h3 className="mb-2 font-semibold">AI Reasoning</h3>
-
-              <p className="leading-7 text-muted-foreground">
-                {loan.aiPrediction.reasoning}
-              </p>
-            </div>
-          </>
+          <GenerateAIButton applicationId={loan.id} />
         )}
       </section>
 
-      {/* User Actions */}
-      {!isAdmin && (
-        <>
-          {loan.aiPrediction && !loan.loanDecision && (
-            <LoanDecisionButtons applicationId={loan.id} />
-          )}
-        </>
+      {/* Admin Review */}
+      {isAdmin && loan.aiPrediction && !loan.loanDecision && (
+        <AdminReviewPanel applicationId={loan.id} currentStatus={loan.status} />
       )}
 
-      {isAdmin && <AdminReviewPanel applicationId={loan.id} />}
-
-      {/* Loan Decision */}
+      {/* Final Decision */}
       {loan.loanDecision && (
         <section className="space-y-4 rounded-lg border p-6">
-          <h2 className="text-xl font-semibold">Loan Decision</h2>
+          <h2 className="text-xl font-semibold">Final Loan Decision</h2>
 
-          <p>
-            <strong>Decision:</strong>{" "}
-            {loan.loanDecision.approved ? "Approved" : "Rejected"}
-          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <p>
+              <strong>Decision:</strong>{" "}
+              {loan.loanDecision.approved ? "Approved" : "Rejected"}
+            </p>
 
-          <p>
-            <strong>Remarks:</strong> {loan.loanDecision.remarks || "-"}
-          </p>
+            <p className="col-span-2">
+              <strong>Remarks:</strong> {loan.loanDecision.remarks || "-"}
+            </p>
+          </div>
         </section>
       )}
     </div>

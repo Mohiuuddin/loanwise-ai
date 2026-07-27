@@ -16,8 +16,33 @@ export const auth = betterAuth({
   trustedOrigins: [process.env.BETTER_AUTH_URL!],
 });
 
+// export async function getCurrentSession() {
+//   return auth.api.getSession({
+//     headers: await headers(),
+//   });
+// }
+
 export async function getCurrentSession() {
-  return auth.api.getSession({
+  const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  if (!session) return null;
+
+  const dbUser = await prisma.user.findUnique({
+    where: {
+      id: session.user.id,
+    },
+    select: {
+      role: true,
+    },
+  });
+
+  return {
+    ...session,
+    user: {
+      ...session.user,
+      role: dbUser?.role,
+    },
+  };
 }

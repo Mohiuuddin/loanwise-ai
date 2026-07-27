@@ -10,7 +10,9 @@ import { generateLoanAnalysis } from "@/services/ai/generate-loan-analysis";
 
 import { createAuditLog } from "@/lib/audit-log";
 
-import { AuditAction } from "@/generated/prisma/enums";
+import { AuditAction, ApplicationStatus } from "@/generated/prisma/enums";
+
+import prisma from "@/lib/prisma";
 
 export async function generateAIPrediction(applicationId: string) {
   const session = await getCurrentSession();
@@ -29,47 +31,92 @@ export async function generateAIPrediction(applicationId: string) {
     throw new Error("Loan application is incomplete.");
   }
 
+  const collateralValue = loan.collateral.reduce(
+    (sum, item) => sum + Number(item.estimatedValue),
+    0,
+  );
+
   let prediction;
 
   try {
     prediction = await generateLoanAnalysis({
       loanAmount: Number(loan.loanAmount),
-      loanTermMonths: loan.loanTermMonths,
+      interestRate: Number(loan.interestRate),
+      loanPurpose: loan.loanPurpose,
+
       monthlyIncome: Number(loan.employment.monthlySalary),
       monthlyExpenses: Number(loan.financialProfile.monthlyExpense),
       existingLoanEmi: Number(loan.financialProfile.existingLoanAmount),
+
       savings: Number(loan.financialProfile.bankBalance ?? 0),
+
       creditScore: loan.financialProfile.creditScore ?? 0,
+
       employmentType: loan.employment.employmentType,
+
+      collateralValue,
     });
   } catch (error) {
     console.error("Groq AI failed. Falling back to rule engine.", error);
 
     prediction = calculateLoanRisk({
       loanAmount: Number(loan.loanAmount),
-      loanTermMonths: loan.loanTermMonths,
+      interestRate: Number(loan.interestRate),
+      loanPurpose: loan.loanPurpose,
+
       monthlyIncome: Number(loan.employment.monthlySalary),
       monthlyExpenses: Number(loan.financialProfile.monthlyExpense),
       existingLoanEmi: Number(loan.financialProfile.existingLoanAmount),
+
       savings: Number(loan.financialProfile.bankBalance ?? 0),
+
       creditScore: loan.financialProfile.creditScore ?? 0,
+
       employmentType: loan.employment.employmentType,
+
+      collateralValue,
     });
   }
 
   await createAIPrediction({
     applicationId,
+
     eligible: prediction.eligible,
     riskScore: prediction.riskScore,
     confidenceScore: prediction.confidenceScore,
+
     recommendedAmount: prediction.recommendedAmount,
+    recommendedRepaymentTermMonths: prediction.recommendedRepaymentTermMonths,
+
+    estimatedMonthlyEMI: prediction.estimatedMonthlyEMI,
+
+    maximumAffordableEMI: prediction.maximumAffordableEMI,
+
+    disposableIncome: prediction.disposableIncome,
+
     reasoning: prediction.reasoning,
 
+    overallRecommendation: prediction.overallRecommendation,
+
     creditAssessment: prediction.creditAssessment,
+
     affordability: prediction.affordability,
+
     employmentRisk: prediction.employmentRisk,
+
     savingsStrength: prediction.savingsStrength,
+
     debtRatio: prediction.debtRatio,
+  });
+
+  // ✅ Move application to AI reviewed
+  await prisma.loanApplication.update({
+    where: {
+      id: applicationId,
+    },
+    data: {
+      status: ApplicationStatus.AI_REVIEWED,
+    },
   });
 
   await createAuditLog({

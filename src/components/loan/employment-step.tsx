@@ -2,6 +2,10 @@
 
 import { useFormContext } from "react-hook-form";
 
+import { LoanApplicationValues } from "@/schemas/loan-application.schema";
+
+import { employmentTypeOptions } from "@/constants/employment-type";
+
 import {
   Form,
   FormControl,
@@ -21,35 +25,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { LoanApplicationValues } from "@/schemas/loan-application.schema";
-
 export default function EmploymentStep() {
   const form = useFormContext<LoanApplicationValues>();
 
   return (
     <Form {...form}>
       <div className="space-y-6 rounded-lg border bg-card p-6">
+        <div>
+          <h2 className="text-xl font-semibold">Employment Information</h2>
+
+          <p className="text-sm text-muted-foreground">
+            Tell us about your employment and monthly income.
+          </p>
+        </div>
+
         <FormField
           control={form.control}
           name="employmentType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Employment Status</FormLabel>
+              <FormLabel>Employment Type</FormLabel>
 
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select employment status" />
+                    <SelectValue placeholder="Select employment type" />
                   </SelectTrigger>
                 </FormControl>
 
                 <SelectContent>
-                  <SelectItem value="FULL_TIME">Full-time</SelectItem>
-                  <SelectItem value="PART_TIME">Part-time</SelectItem>
-                  <SelectItem value="SELF_EMPLOYED">Self-employed</SelectItem>
-                  <SelectItem value="UNEMPLOYED">Unemployed</SelectItem>
-                  <SelectItem value="STUDENT">Student</SelectItem>
-                  <SelectItem value="RETIRED">Retired</SelectItem>
+                  {employmentTypeOptions.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -60,13 +69,13 @@ export default function EmploymentStep() {
 
         <FormField
           control={form.control}
-          name="employerName"
+          name="companyName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Employer Name</FormLabel>
+              <FormLabel>Company Name</FormLabel>
 
               <FormControl>
-                <Input placeholder="Enter employer name" {...field} />
+                <Input placeholder="Enter company name" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -76,15 +85,31 @@ export default function EmploymentStep() {
 
         <FormField
           control={form.control}
-          name="monthlyIncome"
+          name="jobTitle"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Monthly Income</FormLabel>
+              <FormLabel>Job Title</FormLabel>
+
+              <FormControl>
+                <Input placeholder="Enter job title" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="monthlySalary"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Monthly Salary</FormLabel>
 
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Enter monthly income"
+                  min={0}
+                  placeholder="Enter monthly salary"
                   value={field.value ?? ""}
                   onChange={(e) =>
                     field.onChange(
@@ -103,15 +128,17 @@ export default function EmploymentStep() {
 
         <FormField
           control={form.control}
-          name="yearsEmployed"
+          name="employmentYears"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Years Employed</FormLabel>
+              <FormLabel>Years of Employment</FormLabel>
 
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Years at current job"
+                  min={0}
+                  max={50}
+                  placeholder="Years employed"
                   value={field.value ?? ""}
                   onChange={(e) =>
                     field.onChange(
