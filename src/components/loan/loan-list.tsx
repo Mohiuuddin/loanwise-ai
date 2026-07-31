@@ -132,42 +132,47 @@ export default function LoanList({ loans, page, totalPages }: LoanListProps) {
         ))}
       </div>
 
-      {/* Pagination */}
-      {/* <div className="flex items-center justify-between">
-        <Button asChild variant="outline" disabled={page <= 1}>
-          <Link href={`?page=${page - 1}`}>Previous</Link>
-        </Button>
-
-        <span className="text-sm text-muted-foreground">
-          Page {page} of {totalPages}
-        </span>
-
-        <Button asChild variant="outline" disabled={page >= totalPages}>
-          <Link href={`?page=${page + 1}`}>Next</Link>
-        </Button>
-      </div> */}
-
       <div className="flex items-center justify-between">
         {page > 1 ? (
-          <Button asChild variant="outline">
+          <Button
+            asChild
+            variant="outline"
+            size="default"
+            className="cursor-pointer border-2 border-gray-800 px-6 py-5 text-sm font-semibold text-black shadow-sm transition-all hover:bg-gray-100 hover:shadow-md"
+          >
             <Link href={`?page=${page - 1}`}>Previous</Link>
           </Button>
         ) : (
-          <Button variant="outline" disabled>
+          <Button
+            variant="outline"
+            size="default"
+            disabled
+            className="border-2 border-gray-400 px-6 py-5 text-sm font-semibold text-gray-500"
+          >
             Previous
           </Button>
         )}
 
-        <span className="text-sm text-muted-foreground">
+        <span className="text-base font-semibold text-black">
           Page {page} of {totalPages}
         </span>
 
         {page < totalPages ? (
-          <Button asChild variant="outline">
+          <Button
+            asChild
+            variant="outline"
+            size="default"
+            className="cursor-pointer border-2 border-gray-800 px-6 py-5 text-sm font-semibold text-black shadow-sm transition-all hover:bg-gray-100 hover:shadow-md"
+          >
             <Link href={`?page=${page + 1}`}>Next</Link>
           </Button>
         ) : (
-          <Button variant="outline" disabled>
+          <Button
+            variant="outline"
+            size="default"
+            disabled
+            className="border-2 border-gray-400 px-6 py-5 text-sm font-semibold text-gray-500"
+          >
             Next
           </Button>
         )}

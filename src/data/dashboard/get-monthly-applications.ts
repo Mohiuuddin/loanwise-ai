@@ -1,10 +1,8 @@
 import prisma from "@/lib/prisma";
 
-export async function getMonthlyApplications(userId: string) {
+export async function getMonthlyApplications(userId: string, isAdmin = false) {
   const loans = await prisma.loanApplication.findMany({
-    where: {
-      userId,
-    },
+    where: isAdmin ? {} : { userId },
 
     select: {
       createdAt: true,

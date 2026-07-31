@@ -26,12 +26,12 @@ export default async function DashboardPage() {
     riskDistribution,
     approvalRate,
   ] = await Promise.all([
-    getDashboardStats(session.user.id),
-    getRecentApplications(session.user.id),
-    getLoanPurposeStats(session.user.id),
-    getMonthlyApplications(session.user.id),
-    getRiskDistribution(session.user.id),
-    getApprovalRate(session.user.id),
+    getDashboardStats(session.user.id, session.user.role === "ADMIN"),
+    getRecentApplications(session.user.id, session.user.role === "ADMIN"),
+    getLoanPurposeStats(session.user.id, session.user.role === "ADMIN"),
+    getMonthlyApplications(session.user.id, session.user.role === "ADMIN"),
+    getRiskDistribution(session.user.id, session.user.role === "ADMIN"),
+    getApprovalRate(session.user.id, session.user.role === "ADMIN"),
   ]);
 
   return (

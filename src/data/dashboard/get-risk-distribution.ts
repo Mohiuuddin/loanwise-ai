@@ -1,12 +1,14 @@
 import prisma from "@/lib/prisma";
 
-export async function getRiskDistribution(userId: string) {
+export async function getRiskDistribution(userId: string, isAdmin = false) {
   const predictions = await prisma.aIPrediction.findMany({
-    where: {
-      application: {
-        userId,
-      },
-    },
+    where: isAdmin
+      ? {}
+      : {
+          application: {
+            userId,
+          },
+        },
 
     select: {
       riskScore: true,

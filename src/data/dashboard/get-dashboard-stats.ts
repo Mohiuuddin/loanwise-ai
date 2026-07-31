@@ -1,81 +1,75 @@
 import prisma from "@/lib/prisma";
 import { ApplicationStatus } from "@/generated/prisma/enums";
 
-export async function getDashboardStats(userId: string) {
+export async function getDashboardStats(userId: string, isAdmin = false) {
+  const applicationWhere = isAdmin ? {} : { userId };
+
+  const predictionWhere = isAdmin
+    ? {}
+    : {
+        application: {
+          userId,
+        },
+      };
+
   const [
     total,
     pending,
     approved,
     rejected,
-
     averageRisk,
     averageConfidence,
-
     totalRequested,
     totalRecommended,
   ] = await Promise.all([
     prisma.loanApplication.count({
-      where: { userId },
+      where: applicationWhere,
     }),
 
     prisma.loanApplication.count({
       where: {
-        userId,
+        ...applicationWhere,
         status: ApplicationStatus.PENDING,
       },
     }),
 
     prisma.loanApplication.count({
       where: {
-        userId,
+        ...applicationWhere,
         status: ApplicationStatus.APPROVED,
       },
     }),
 
     prisma.loanApplication.count({
       where: {
-        userId,
+        ...applicationWhere,
         status: ApplicationStatus.REJECTED,
       },
     }),
 
     prisma.aIPrediction.aggregate({
-      where: {
-        application: {
-          userId,
-        },
-      },
+      where: predictionWhere,
       _avg: {
         riskScore: true,
       },
     }),
 
     prisma.aIPrediction.aggregate({
-      where: {
-        application: {
-          userId,
-        },
-      },
+      where: predictionWhere,
       _avg: {
         confidenceScore: true,
       },
     }),
 
     prisma.loanApplication.aggregate({
-      where: {
-        userId,
-      },
+      where: applicationWhere,
       _sum: {
         loanAmount: true,
       },
     }),
 
     prisma.aIPrediction.aggregate({
-      where: {
-        application: {
-          userId,
-        },
-      },
+      where: predictionWhere,
       _sum: {
         recommendedAmount: true,
       },
