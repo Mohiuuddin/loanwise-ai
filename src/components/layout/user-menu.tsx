@@ -61,12 +61,18 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push("/dashboard/profile")}
+        >
           <User className="mr-2 h-4 w-4" />
           Profile
         </DropdownMenuItem>
 
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push("/dashboard/settings")}
+        >
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </DropdownMenuItem>

@@ -16,12 +16,6 @@ export const auth = betterAuth({
   trustedOrigins: [process.env.BETTER_AUTH_URL!],
 });
 
-// export async function getCurrentSession() {
-//   return auth.api.getSession({
-//     headers: await headers(),
-//   });
-// }
-
 export async function getCurrentSession() {
   const session = await auth.api.getSession({
     headers: await headers(),

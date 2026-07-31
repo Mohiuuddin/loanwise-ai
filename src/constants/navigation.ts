@@ -46,7 +46,7 @@ export const adminNavigation = [
   },
   {
     title: "Audit Logs",
-    href: "/dashboard/audit-logs",
+    href: "/dashboard/audit-log",
     icon: ScrollText,
   },
 ] as const;
