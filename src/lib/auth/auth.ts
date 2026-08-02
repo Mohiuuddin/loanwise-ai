@@ -4,6 +4,8 @@ import { headers } from "next/headers";
 
 import prisma from "@/lib/prisma";
 
+import { UserStatus } from "@/generated/prisma/enums";
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -29,14 +31,45 @@ export async function getCurrentSession() {
     },
     select: {
       role: true,
+      status: true,
     },
   });
+
+  if (!dbUser || dbUser.status === UserStatus.INACTIVE) {
+    return null;
+  }
 
   return {
     ...session,
     user: {
       ...session.user,
-      role: dbUser?.role,
+      role: dbUser.role,
+      status: dbUser.status,
     },
   };
 }
+
+// export async function getCurrentSession() {
+//   const session = await auth.api.getSession({
+//     headers: await headers(),
+//   });
+
+//   if (!session) return null;
+
+//   const dbUser = await prisma.user.findUnique({
+//     where: {
+//       id: session.user.id,
+//     },
+//     select: {
+//       role: true,
+//     },
+//   });
+
+//   return {
+//     ...session,
+//     user: {
+//       ...session.user,
+//       role: dbUser?.role,
+//     },
+//   };
+// }

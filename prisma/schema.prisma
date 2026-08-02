@@ -17,6 +17,7 @@ model User {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   role             UserRole          @default(USER)
+  status           UserStatus        @default(ACTIVE)
   auditLogs        AuditLog[]
   loanApplications LoanApplication[]
   accounts         Account[]
@@ -191,6 +192,11 @@ model Verification {
 enum UserRole {
   USER
   ADMIN
+} 
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
 }
 
 enum LoanPurpose {
